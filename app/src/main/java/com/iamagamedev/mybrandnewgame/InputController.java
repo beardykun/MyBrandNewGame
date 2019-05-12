@@ -18,7 +18,7 @@ public class InputController {
     public InputController(int screenWidth, int screenHeight) {
         screenX = screenWidth;
         screenY = screenHeight;
-        int buttonWidth = screenWidth / 8;
+        int buttonWidth = screenWidth / 12;
         int buttonHeight = screenHeight / 7;
         int buttonPudding = buttonWidth / 80;
 
@@ -44,7 +44,7 @@ public class InputController {
                 int y = (int) motionEvent.getY(i);
 
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
                         if (!levelManager.isPlaying()){
                             levelManager.switchPlayingStatus();
                         }
@@ -77,29 +77,7 @@ public class InputController {
                         levelManager.hero.setPressingDown(false);
                         levelManager.hero.setPressingRight(false);
                         break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        if (moveDirectionLeft.contains(x, y)) {
-                            levelManager.hero.setPressingUp(false);
-                            levelManager.hero.setPressingLeft(true);
-                            levelManager.hero.setPressingDown(false);
-                            levelManager.hero.setPressingRight(false);
-                        } else if (moveDirectionRight.contains(x, y)) {
-                            levelManager.hero.setPressingUp(false);
-                            levelManager.hero.setPressingLeft(false);
-                            levelManager.hero.setPressingDown(false);
-                            levelManager.hero.setPressingRight(true);
-                        }else if (moveDirectionUp.contains(x, y)) {
-                            levelManager.hero.setPressingUp(true);
-                            levelManager.hero.setPressingLeft(false);
-                            levelManager.hero.setPressingDown(false);
-                            levelManager.hero.setPressingRight(false);
-                        } else if (moveDirectionDown.contains(x, y)) {
-                            levelManager.hero.setPressingUp(false);
-                            levelManager.hero.setPressingLeft(false);
-                            levelManager.hero.setPressingDown(true);
-                            levelManager.hero.setPressingRight(false);
-                        }
-                        break;
+
                     case MotionEvent.ACTION_POINTER_UP:
 
                         levelManager.hero.setPressingUp(false);

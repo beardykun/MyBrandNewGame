@@ -27,9 +27,9 @@ public class Viewport {
         screenCentreY = screenYResolution / 2;
 
         pixelsPerMetreX = screenXResolution / 20;
-        pixelsPerMetreY = screenYResolution / 14;
+        pixelsPerMetreY = screenYResolution / 11;
 
-        metresToShowX = 14;
+        metresToShowX = 20;
         metresToShowY = 14;
 
         convertedRect = new Rect();

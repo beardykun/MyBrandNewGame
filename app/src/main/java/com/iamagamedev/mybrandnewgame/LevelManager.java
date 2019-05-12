@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 
 import com.iamagamedev.mybrandnewgame.background.Background;
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Flore;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Forest;
@@ -68,8 +69,8 @@ public class LevelManager {
         gameObjects = new ArrayList<>();
         enemisList = new ArrayList<>();
 
-        bitmapsArray = new Bitmap[25];
-        badBitmapArray = new Bitmap[25];
+        bitmapsArray = new Bitmap[11];
+        badBitmapArray = new Bitmap[11];
 
 
         loadMapData(context, pixelsPerMetre, hiroX, hiroY);
@@ -149,6 +150,9 @@ public class LevelManager {
                 break;
             case 'f':
                 index = 10;
+                break;
+            case '.':
+                index = 11;
                 break;
             default:
                 index = 0;
@@ -244,6 +248,10 @@ public class LevelManager {
                         case 'f':
                             gameObjects.add(new Forest(j, i, c));
                             break;
+                        case '.':
+                            gameObjects.add(new SpellObject(j, i, c));
+                            break;
+
                     }
                     if (bitmapsArray[getBitmapIndex(c)] == null) {
                         bitmapsArray[getBitmapIndex(c)] =

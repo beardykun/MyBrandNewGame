@@ -11,21 +11,21 @@ public class LevelHome extends LevelData{
     public LevelHome(){
         tiles = new ArrayList<>();
         this.tiles.add("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
-        this.tiles.add("w........w......................w");
-        this.tiles.add("w........w......................w");
-        this.tiles.add("w........w......................w");
-        this.tiles.add("w...............................w");
-        this.tiles.add("w........w......................w");
-        this.tiles.add("w........w......................w");
-        this.tiles.add("wwwwwwwwwwwwwwwwwwww.wwwwwwwwwwww");
-        this.tiles.add("w2..2..2..2....w................w");
-        this.tiles.add("w..............w................w");
-        this.tiles.add("w..............w................w");
-        this.tiles.add("w...............................w");
-        this.tiles.add("w..............w................w");
-        this.tiles.add("w..............w................w");
+        this.tiles.add("w        w                      w");
+        this.tiles.add("w        w                      w");
+        this.tiles.add("w        w                      w");
+        this.tiles.add("w                               w");
+        this.tiles.add("w        w                      w");
+        this.tiles.add("w        w                      w");
+        this.tiles.add("wwwwwwwwwwwwwwwwwwww wwwwwwwwwwww");
+        this.tiles.add("w2  2  2  2    w                w");
+        this.tiles.add("w              w                w");
+        this.tiles.add("w              w                w");
+        this.tiles.add("w                               w");
+        this.tiles.add("w              w                w");
+        this.tiles.add("w              w                w");
         this.tiles.add("wwwwwwpwwwwwwwwwwwwwwwwwwwwwwwwww");
-        this.tiles.add(".................................");
+        this.tiles.add("                                 ");
 
 
 

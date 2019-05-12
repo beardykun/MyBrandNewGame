@@ -45,7 +45,7 @@ public class Enemy extends GameObject {
 
     @Override
     public void update(long fps) {
-       /* if (currentWaypoint.x > getWorldLocation().x) {
+        if (currentWaypoint.x > getWorldLocation().x) {
             setxVelocity(MAX_X_VELOCITY);
         } else if (currentWaypoint.x < getWorldLocation().x) {
             setxVelocity(-MAX_X_VELOCITY);
@@ -59,7 +59,7 @@ public class Enemy extends GameObject {
         } else {
             setyVelocity(0);
         }
-        move(fps);*/
+        move(fps);
         setRectHitBox();
     }
 

@@ -93,21 +93,16 @@ public class GameView extends SurfaceView implements Runnable {
                         go.getWorldLocation().y,
                         go.getWidth(), go.getHeight())) {
                     go.setVisible(true);
-                    /*if (go.isMagichan())
-                        checkEnemySpellForCollisions(go);*/
                     checkForCollisions(go);
                     checkForEnemyCollisions(go);
 
                     if (lm.isPlaying()) {
                         go.update(fps);
 
-                        /*if (go.getType() == 'e') {
+                        if (go.getType() == 'e') {
                             Enemy enemy = (Enemy) go;
                             enemy.setWaypoint(lm.hero.getWorldLocation());
                         }
-                        if (go.getType() == 'p'){
-                            Hero hiro = (Hero)go;
-                        }*/
                     }
 
                 } else {
@@ -175,39 +170,20 @@ public class GameView extends SurfaceView implements Runnable {
             }
             //drawBackground(4, 0);
 
-            if (debugging) {
-                paint.setTextSize(26);
-                paint.setTextAlign(Paint.Align.LEFT);
-                paint.setColor(Color.RED);
-                canvas.drawText("fps:" + fps, 10, 60, paint);
+            debuggingInfo(debugging, canvas);
 
-                canvas.drawText("num objects:" +
-                        lm.gameObjects.size(), 10, 80, paint);
+            if (!lm.level.equals("LevelBattle")) {
+                paint.setColor(Color.BLACK);
 
-                canvas.drawText("num clipped:" +
-                        viewport.getNumClipped(), 10, 100, paint);
-
-                canvas.drawText("playerX:" +
-                                lm.gameObjects.get(lm.hiroIndex).
-                                        getWorldLocation().x,
-                        10, 120, paint);
-                canvas.drawText("playerY:" +
-                                lm.gameObjects.get(lm.hiroIndex).
-
-                                        getWorldLocation().y,
-                        10, 140, paint);
-                //for reset the number of clipped objects each frame
-                viewport.resetNumClipped();
-            }// End if(debugging)
-
-            Rect moveDirectionLeft = ic.getMoveDirectionLeft();
-            canvas.drawRect(moveDirectionLeft, paint);
-            Rect moveDirectionRight = ic.getMoveDirectionRight();
-            canvas.drawRect(moveDirectionRight, paint);
-            Rect moveDirectionDown = ic.getMoveDirectionDown();
-            canvas.drawRect(moveDirectionDown, paint);
-            Rect moveDirectionUp = ic.getMoveDirectionUp();
-            canvas.drawRect(moveDirectionUp, paint);
+                Rect moveDirectionLeft = ic.getMoveDirectionLeft();
+                canvas.drawRect(moveDirectionLeft, paint);
+                Rect moveDirectionRight = ic.getMoveDirectionRight();
+                canvas.drawRect(moveDirectionRight, paint);
+                Rect moveDirectionDown = ic.getMoveDirectionDown();
+                canvas.drawRect(moveDirectionDown, paint);
+                Rect moveDirectionUp = ic.getMoveDirectionUp();
+                canvas.drawRect(moveDirectionUp, paint);
+            }
 
             ourHolder.unlockCanvasAndPost(canvas);
         }
@@ -362,5 +338,32 @@ public class GameView extends SurfaceView implements Runnable {
             ic.handleIntent(event, lm, soundManager, viewport);
         }
         return true;
+    }
+
+    private void debuggingInfo(boolean debugging, Canvas canvas){
+        if (debugging) {
+            paint.setTextSize(26);
+            paint.setTextAlign(Paint.Align.LEFT);
+            paint.setColor(Color.RED);
+            canvas.drawText("fps:" + fps, 10, 60, paint);
+
+            canvas.drawText("num objects:" +
+                    lm.gameObjects.size(), 10, 80, paint);
+
+            canvas.drawText("num clipped:" +
+                    viewport.getNumClipped(), 10, 100, paint);
+
+            canvas.drawText("playerX:" +
+                            lm.gameObjects.get(lm.hiroIndex).
+                                    getWorldLocation().x,
+                    10, 120, paint);
+            canvas.drawText("playerY:" +
+                            lm.gameObjects.get(lm.hiroIndex).
+
+                                    getWorldLocation().y,
+                    10, 140, paint);
+            //for reset the number of clipped objects each frame
+            viewport.resetNumClipped();
+        }// End if(debugging)
     }
 }

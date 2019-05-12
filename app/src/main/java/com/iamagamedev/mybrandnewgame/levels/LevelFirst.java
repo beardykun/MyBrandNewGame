@@ -14,7 +14,7 @@ public class LevelFirst extends LevelData {
                       //012345678901234567890123456789012345678901234567890
         this.tiles.add("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
         this.tiles.add("w                                                                          w"); //1
-        this.tiles.add("w                                                                          w");
+        this.tiles.add("w        h    e                                                            w");
         this.tiles.add("w                                                                          w");
         this.tiles.add("w                                                                          w");
         this.tiles.add("w                                                                          w");
