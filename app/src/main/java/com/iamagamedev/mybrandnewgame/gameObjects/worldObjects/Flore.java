@@ -1,5 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.worldObjects;
 
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 
 /**
@@ -17,8 +18,8 @@ public class Flore extends GameObject {
 
         setType(type);
 
-        setBitmapName("flore");
-        setBadBitmapName("flore");
+        setBitmapName(ObjectNames.FLORE);
+        setBadBitmapName(ObjectNames.FLORE);
 
         setWorldLocation(worldStartX, worldStartY, -1);
     }

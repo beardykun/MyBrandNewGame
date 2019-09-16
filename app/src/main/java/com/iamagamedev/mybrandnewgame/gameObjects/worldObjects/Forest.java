@@ -1,5 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.worldObjects;
 
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 
 /**
@@ -17,8 +18,8 @@ public class Forest extends GameObject {
 
         setType(type);
 
-        setBitmapName("wood");
-        setBadBitmapName("wood");
+        setBitmapName(ObjectNames.WOOD);
+        setBadBitmapName(ObjectNames.WOOD);
 
         setWorldLocation(worldStartX, worldStartY, -1);
         setRectHitBox();

@@ -2,23 +2,29 @@ package com.iamagamedev.mybrandnewgame.gameObjects.enemys;
 
 import android.graphics.PointF;
 
+import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.LocationXYZ;
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.RectHitBox;
-import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemySpellObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 
 /**
  * Created by Михан on 17.05.2017.
  */
 
-public class Enemy extends GameObject {
+public class Enemy extends EnemyObject {
 
     private long lastWaypointSetTime;
     private PointF currentWaypoint;
     private final float MAX_X_VELOCITY = 1.8f;
     private final float MAX_Y_VELOCITY = 1.8f;
+    private int pixelPerMetre;
 
     public Enemy(float worldStartX, float worldStartY,
-                 char type) {
+                 char type, int pixelPerMetre) {
+        this.pixelPerMetre = pixelPerMetre;
         final float HEIGHT = 1;
         final float WIDTH = 1;
         final float HEALTH = 150;
@@ -29,15 +35,20 @@ public class Enemy extends GameObject {
         setHealth(HEALTH);
         setDamage(DAMAGE);
 
+        setEnemySkill(80);
+        setEnemyTired(0);
+        setEnemyFear(0);
+
         setType(type);
         setMoves(true);
         setActive(true);
         setVisible(true);
+        setFacing(LEFT);
 
         currentWaypoint = new PointF();
 
-        setBitmapName("enemy");
-        setBadBitmapName("enemyblow");
+        setBitmapName(ObjectNames.ENEMY);
+        setBadBitmapName(ObjectNames.ENEMY_BAD);
 
         setWorldLocation(worldStartX, worldStartY, 0);
         setRectHitBox();
@@ -61,13 +72,14 @@ public class Enemy extends GameObject {
         }
         move(fps);
         setRectHitBox();
+        //fireSpell();
     }
 
-    public void setWaypoint(LocationXYZ hiroLocation) {
+    public void setWaypoint(LocationXYZ heroLocation) {
         if (System.currentTimeMillis() > lastWaypointSetTime + 2000) {
             lastWaypointSetTime = System.currentTimeMillis();
-            currentWaypoint.x = hiroLocation.x;
-            currentWaypoint.y = hiroLocation.y;
+            currentWaypoint.x = heroLocation.x + 5;
+            currentWaypoint.y = heroLocation.y;
         }
     }
 
@@ -92,4 +104,20 @@ public class Enemy extends GameObject {
         return collided;
     }
 
+    private void fireSpell() {
+        EnemySpellObject enemySpellObject = EnemySpellObject.getInstance(getWorldLocation().x,
+                getWorldLocation().y, CharConstants.ENEMY_SPELL, pixelPerMetre);
+        if (!enemySpellObject.isVisible()) {
+            enemySpellObject.setFacing(this.getFacing());
+            enemySpellObject.updatePosition(getWorldLocation().x, getWorldLocation().y);
+        }
+    }
+
+    public void isUnderAttack(SpellObject spellObject) {
+        if (this.getWorldLocation().x - spellObject.getWorldLocation().x < 3) {
+            if (successfulDefenceOrAttack()) {
+                spellObject.setActive(false);
+            }
+        }
+    }
 }

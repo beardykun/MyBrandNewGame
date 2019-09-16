@@ -1,5 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.worldObjects;
 
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 
 /**
@@ -17,8 +18,8 @@ public class Mountain extends GameObject {
 
         setType(type);
 
-        setBitmapName("mount");
-        setBadBitmapName("mount");
+        setBitmapName(ObjectNames.MOUNT);
+        setBadBitmapName(ObjectNames.MOUNT);
 
         setWorldLocation(worldStartX, worldStartY, -1);
         setRectHitBox();

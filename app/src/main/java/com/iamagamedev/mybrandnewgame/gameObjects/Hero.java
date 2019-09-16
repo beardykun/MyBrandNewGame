@@ -1,11 +1,18 @@
 package com.iamagamedev.mybrandnewgame.gameObjects;
 
 import android.content.Context;
-import android.graphics.PointF;
 import android.util.Log;
 
+import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
+import com.iamagamedev.mybrandnewgame.Constants.SpellNames;
 import com.iamagamedev.mybrandnewgame.LocationXYZ;
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.RectHitBox;
+import com.iamagamedev.mybrandnewgame.SoundManager;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.ShieldSpellObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Михан on 17.05.2017.
@@ -18,8 +25,9 @@ public class Hero extends GameObject {
     private RectHitBox rectHitBoxTop;
     private RectHitBox rectHitBoxRight;
 
+    private ArrayList<String> spellObjects;
+
     private final float MAX_VELOCITY = 2;
-    private Context context;
     private int pixelPerMetre;
 
     private boolean pressingRight, pressingLeft, pressingUp, pressingDown;
@@ -27,8 +35,9 @@ public class Hero extends GameObject {
     public Hero(Context context, float worldStartX, float worldStartY,
                 int pixelsPerMetre) {
 
-        this.context = context;
         this.pixelPerMetre = pixelsPerMetre;
+        spellObjects = new ArrayList<>();
+        spellObjects.add(SpellNames.FIREBALL);
 
         final float HEALTH = 50;
         final float HEIGHT = 1;
@@ -45,10 +54,10 @@ public class Hero extends GameObject {
         setMoves(true);
         setActive(true);
         setVisible(true);
-        setType('p');
+        setType(CharConstants.PLAYER);
 
-        setBitmapName("mage");
-        setBadBitmapName("magedead");
+        setBitmapName(ObjectNames.MAGE);
+        setBadBitmapName(ObjectNames.MAGE_DEAD);
 
         final int ANIMATION_FPS = 16;
         final int ANIMATION_FRAME_COUNT = 4;
@@ -117,6 +126,7 @@ public class Hero extends GameObject {
         rectHitBoxRight.left = hiroX + getWidth() * .71f;
         rectHitBoxRight.bottom = hiroY + getHeight() * .8f;
         rectHitBoxRight.right = hiroX + getWidth() * .8f;
+        updateShieldLocation();
     }
 
     public int checkCollisions(RectHitBox rectHitBox) {
@@ -136,7 +146,7 @@ public class Hero extends GameObject {
         }
         if (this.rectHitBoxTop.intersects(rectHitBox)) {
             this.setWorldLocationY(rectHitBox.bottom);
-            collided = 3;
+            collided = 2;
         }
         return collided;
     }
@@ -174,21 +184,18 @@ public class Hero extends GameObject {
         return rectHitBoxTop;
     }
 
-    public void moveHero(int x, int y){
-          if (x > getWorldLocation().x) {
-            setxVelocity(MAX_VELOCITY);
-        } else if (x < getWorldLocation().x) {
-            setxVelocity(-MAX_VELOCITY);
-        } else {
-            setxVelocity(0);
-        }
-        if (y >= getWorldLocation().y) {
-            setyVelocity(MAX_VELOCITY);
-        } else if (y < getWorldLocation().y) {
-            setyVelocity(-MAX_VELOCITY);
-        } else {
-            setyVelocity(0);
-        }
-        Log.i("x,y", x +" " + y + " " + getWorldLocation().x +  " " + getWorldLocation().y);
+    public void fireSpell() {
+        SoundManager.getInstance().playPTCD();
+        SpellObject spellObject = SpellObject.getInstance(this.getWorldLocation().x,
+                this.getWorldLocation().y, CharConstants.SPELL, pixelPerMetre);
+        spellObject.setFacing(this.getFacing());
+        spellObject.setSpellType(spellObjects.get(0));
+        spellObject.updatePosition(getWorldLocation().x, getWorldLocation().y);
+    }
+
+    private void updateShieldLocation() {
+        ShieldSpellObject shieldSpellObject = ShieldSpellObject.Companion.getInstance(
+                getWorldLocation().x, getWorldLocation().y, CharConstants.SHIELD, pixelPerMetre);
+        shieldSpellObject.setWorldLocation(getWorldLocation().x - 0.5f, getWorldLocation().y - 0.5f, 0);
     }
 }

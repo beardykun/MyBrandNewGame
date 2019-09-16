@@ -3,22 +3,27 @@ package com.iamagamedev.mybrandnewgame;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
+import com.iamagamedev.mybrandnewgame.Constants.MapNames;
 import com.iamagamedev.mybrandnewgame.background.Background;
+import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.Hero;
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemyShieldObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemySpellObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.ShieldSpellObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Flore;
-import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Forest;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Grass;
-import com.iamagamedev.mybrandnewgame.gameObjects.Hero;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Home;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Mountain;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Town;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Wall;
 import com.iamagamedev.mybrandnewgame.levels.LevelBattle;
-import com.iamagamedev.mybrandnewgame.levels.LevelHome;
 import com.iamagamedev.mybrandnewgame.levels.LevelData;
 import com.iamagamedev.mybrandnewgame.levels.LevelFirst;
+import com.iamagamedev.mybrandnewgame.levels.LevelHome;
 import com.iamagamedev.mybrandnewgame.levels.WorldMap;
 
 import java.util.ArrayList;
@@ -34,6 +39,7 @@ public class LevelManager {
     int mapHeight;
 
     Hero hero;
+    SpellObject spellObject;
     int hiroIndex;
     int currentIndex = -1;
 
@@ -44,33 +50,20 @@ public class LevelManager {
     ArrayList<Background> backgrounds;
     ArrayList<Integer> enemisList;
 
-    Bitmap[] bitmapsArray;
+    private Bitmap[] bitmapsArray;
     private Bitmap[] badBitmapArray;
 
     public LevelManager(Context context, int pixelsPerMetre,
                         String level, float hiroX, float hiroY) {
         this.level = level;
 
-        switch (level) {
-            case "LevelFirst":
-                levelData = new LevelFirst();
-                break;
-            case "LevelHome":
-                levelData = new LevelHome();
-                break;
-            case "LevelBattle":
-                levelData = new LevelBattle();
-                break;
-            case "WorldMap":
-                levelData = new WorldMap();
-                break;
-        }
+        getLevelName(level);
 
         gameObjects = new ArrayList<>();
         enemisList = new ArrayList<>();
 
-        bitmapsArray = new Bitmap[11];
-        badBitmapArray = new Bitmap[11];
+        bitmapsArray = new Bitmap[20];
+        badBitmapArray = new Bitmap[20];
 
 
         loadMapData(context, pixelsPerMetre, hiroX, hiroY);
@@ -78,128 +71,33 @@ public class LevelManager {
 
     }
 
-    public Bitmap getBitmap(char blockType) {
-        int index;
-        switch (blockType) {
-            case ' ':
-                index = 0;
+    private void getLevelName(String levelName) {
+        switch (levelName) {
+            case MapNames.LEVEL_FIRST:
+                levelData = new LevelFirst();
                 break;
-            case 'g':
-                index = 1;
+            case MapNames.LEVEL_HOME:
+                levelData = new LevelHome();
                 break;
-            case 'p':
-                index = 2;
+            case MapNames.LEVEL_BATTLE:
+                levelData = new LevelBattle();
                 break;
-            case 'w':
-                index = 3;
-                break;
-            case 'e':
-                index = 4;
-                break;
-            case 'h':
-                index = 5;
-                break;
-            case '2':
-                index = 6;
-                break;
-            case 'm':
-                index = 8;
-                break;
-            case 't':
-                index = 9;
-                break;
-            case 'f':
-                index = 10;
-                break;
-            default:
-                index = 0;
+            case MapNames.WORLD_MAP:
+                levelData = new WorldMap();
                 break;
         }
-        return bitmapsArray[index];
+    }
+
+    public Bitmap getBitmap(char blockType) {
+        return bitmapsArray[getPosition(blockType)];
     }
 
     public int getBitmapIndex(char blockType) {
-        int index;
-        switch (blockType) {
-            case ' ':
-                index = 0;
-                break;
-            case 'g':
-                index = 1;
-                break;
-            case 'p':
-                index = 2;
-                break;
-            case 'w':
-                index = 3;
-                break;
-            case 'e':
-                index = 4;
-                break;
-            case 'h':
-                index = 5;
-                break;
-            case '2':
-                index = 6;
-                break;
-            case 'm':
-                index = 8;
-                break;
-            case 't':
-                index = 9;
-                break;
-            case 'f':
-                index = 10;
-                break;
-            case '.':
-                index = 11;
-                break;
-            default:
-                index = 0;
-                break;
-
-        }// End switch
-        return index;
+        return getPosition(blockType);
     }// End getBitmapIndex()
 
     public Bitmap getBadBitmap(char blockType) {
-        int index;
-        switch (blockType) {
-            case ' ':
-                index = 0;
-                break;
-            case 'g':
-                index = 1;
-                break;
-            case 'p':
-                index = 2;
-                break;
-            case 'w':
-                index = 3;
-                break;
-            case 'e':
-                index = 4;
-                break;
-            case 'h':
-                index = 5;
-                break;
-            case '2':
-                index = 6;
-                break;
-            case 'm':
-                index = 8;
-                break;
-            case 't':
-                index = 9;
-                break;
-            case 'f':
-                index = 10;
-                break;
-            default:
-                index = 0;
-                break;
-        }
-        return badBitmapArray[index];
+        return badBitmapArray[getPosition(blockType)];
     }
 
     public void loadMapData(Context context, int pixelsPerMetre,
@@ -217,39 +115,49 @@ public class LevelManager {
                 if (c != ' ') {
                     currentIndex++;
                     switch (c) {
-                        case 'g':
+                        case CharConstants.GRASS:
                             gameObjects.add(new Grass(j, i, c));
                             break;
-                        case 'p':
+                        case CharConstants.PLAYER:
                             gameObjects.add(new Hero(context, hiroX, hiroY, pixelsPerMetre));
                             hiroIndex = currentIndex;
                             hero = (Hero) gameObjects.get(hiroIndex);
                             break;
-                        case 'e':
-                            gameObjects.add(new Enemy(j, i, c));
+                        case CharConstants.ENEMY:
+                            gameObjects.add(new Enemy(j, i, c, pixelsPerMetre));
                             enemisList.add(currentIndex);
                             break;
-                        case 'w':
+                        case CharConstants.WALL:
                             gameObjects.add(new Wall(j, i, c));
                             break;
-                        case 'h':
+                        case CharConstants.HOME:
                             entranceIndex++;
                             gameObjects.add(new Home(j, i, c, levelData.locations.get(entranceIndex)));
                             break;
-                        case '2':
+                        case CharConstants.FLORE:
                             gameObjects.add(new Flore(j, i, c));
                             break;
-                        case 'm':
+                        case CharConstants.MOUNTAIN:
                             gameObjects.add(new Mountain(j, i, c));
                             break;
-                        case 't':
+                        case CharConstants.TOWN:
                             gameObjects.add(new Town(j, i, c));
                             break;
-                        case 'f':
+                        case CharConstants.FOREST:
                             gameObjects.add(new Forest(j, i, c));
                             break;
-                        case '.':
-                            gameObjects.add(new SpellObject(j, i, c));
+                        case CharConstants.SPELL:
+                            gameObjects.add(SpellObject.getInstance(j, i, c, pixelsPerMetre));
+                            spellObject = (SpellObject) gameObjects.get(currentIndex);
+                            break;
+                        case CharConstants.SHIELD:
+                            gameObjects.add(ShieldSpellObject.Companion.getInstance(j, i, c, pixelsPerMetre));
+                            break;
+                        case CharConstants.ENEMY_SPELL:
+                            gameObjects.add(EnemySpellObject.getInstance(j, i, c, pixelsPerMetre));
+                            break;
+                        case CharConstants.ENEMY_SHIELD:
+                            gameObjects.add(EnemyShieldObject.Companion.getInstance(j, i, c, pixelsPerMetre));
                             break;
 
                     }
@@ -282,4 +190,56 @@ public class LevelManager {
             backgrounds.add(new Background(context, pixelsPerMetre, screenWidth, bgData));
         }
     }*/
+
+    private int getPosition(char type) {
+        int index;
+        switch (type) {
+            case CharConstants.NOTHING:
+                index = 0;
+                break;
+            case CharConstants.GRASS:
+                index = 1;
+                break;
+            case CharConstants.PLAYER:
+                index = 2;
+                break;
+            case CharConstants.WALL:
+                index = 3;
+                break;
+            case CharConstants.ENEMY:
+                index = 4;
+                break;
+            case CharConstants.HOME:
+                index = 5;
+                break;
+            case CharConstants.FLORE:
+                index = 6;
+                break;
+            case CharConstants.MOUNTAIN:
+                index = 8;
+                break;
+            case CharConstants.TOWN:
+                index = 9;
+                break;
+            case CharConstants.FOREST:
+                index = 10;
+                break;
+            case CharConstants.SPELL:
+                index = 11;
+                break;
+            case CharConstants.SHIELD:
+                index = 12;
+                break;
+            case CharConstants.ENEMY_SPELL:
+                index = 13;
+                break;
+            case CharConstants.ENEMY_SHIELD:
+                index = 14;
+                break;
+            default:
+                index = 0;
+                break;
+        }
+        return index;
+    }
 }

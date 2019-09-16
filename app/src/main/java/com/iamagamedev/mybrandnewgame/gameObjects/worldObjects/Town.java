@@ -1,5 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.worldObjects;
 
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 
 /**
@@ -17,8 +18,8 @@ public class Town extends GameObject {
 
         setType(type);
 
-        setBitmapName("town");
-        setBadBitmapName("town");
+        setBitmapName(ObjectNames.TOWN);
+        setBadBitmapName(ObjectNames.TOWN);
 
         setWorldLocation(worldStartX, worldStartY, -1);
         setRectHitBox();

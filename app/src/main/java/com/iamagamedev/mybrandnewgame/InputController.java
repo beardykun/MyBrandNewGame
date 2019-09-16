@@ -12,6 +12,7 @@ public class InputController {
     private Rect moveDirectionRight;
     private Rect moveDirectionUp;
     private Rect moveDirectionDown;
+    private Rect fireButton;
     private int screenX;
     private int screenY;
 
@@ -33,6 +34,9 @@ public class InputController {
 
         moveDirectionUp = new Rect(screenWidth - buttonPudding - buttonWidth * 2, screenHeight - buttonPudding - buttonHeight * 2,
                 screenWidth - buttonPudding - buttonWidth, screenHeight - buttonPudding * 3 - buttonHeight);
+
+        fireButton = new Rect(buttonPudding + buttonWidth / 2, screenHeight - buttonPudding - buttonHeight * 2,
+                buttonPudding + (int) (buttonWidth * 1.5), screenHeight - buttonPudding * 3 - buttonHeight);
     }
 
     public void handleIntent(MotionEvent motionEvent, LevelManager levelManager, SoundManager sm, Viewport vp) {
@@ -45,7 +49,7 @@ public class InputController {
 
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_MOVE:
-                        if (!levelManager.isPlaying()){
+                        if (!levelManager.isPlaying()) {
                             levelManager.switchPlayingStatus();
                         }
                         if (moveDirectionLeft.contains(x, y)) {
@@ -58,7 +62,7 @@ public class InputController {
                             levelManager.hero.setPressingLeft(false);
                             levelManager.hero.setPressingDown(false);
                             levelManager.hero.setPressingRight(true);
-                        }else if (moveDirectionUp.contains(x, y)) {
+                        } else if (moveDirectionUp.contains(x, y)) {
                             levelManager.hero.setPressingUp(true);
                             levelManager.hero.setPressingLeft(false);
                             levelManager.hero.setPressingDown(false);
@@ -68,18 +72,12 @@ public class InputController {
                             levelManager.hero.setPressingLeft(false);
                             levelManager.hero.setPressingDown(true);
                             levelManager.hero.setPressingRight(false);
+                        } else if (fireButton.contains(x, y)) {
+                            levelManager.hero.fireSpell();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-
-                        levelManager.hero.setPressingUp(false);
-                        levelManager.hero.setPressingLeft(false);
-                        levelManager.hero.setPressingDown(false);
-                        levelManager.hero.setPressingRight(false);
-                        break;
-
                     case MotionEvent.ACTION_POINTER_UP:
-
                         levelManager.hero.setPressingUp(false);
                         levelManager.hero.setPressingLeft(false);
                         levelManager.hero.setPressingDown(false);
@@ -104,5 +102,9 @@ public class InputController {
 
     public Rect getMoveDirectionUp() {
         return moveDirectionUp;
+    }
+
+    public Rect getFireButton() {
+        return fireButton;
     }
 }

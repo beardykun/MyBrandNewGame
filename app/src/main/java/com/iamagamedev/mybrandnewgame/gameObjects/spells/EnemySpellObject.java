@@ -3,12 +3,11 @@ package com.iamagamedev.mybrandnewgame.gameObjects.spells;
 import com.iamagamedev.mybrandnewgame.Constants.SpellNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 
-public class SpellObject extends GameObject {
+public class EnemySpellObject extends GameObject {
 
-    private static SpellObject spellObject;
-    private GameObject currentSpell;
+    private static EnemySpellObject spellObject;
 
-    private SpellObject(float startWorldX, float startWorldY, char type, int pixelsPerMetre) {
+    private EnemySpellObject(float startWorldX, float startWorldY, char type, int pixelsPerMetre) {
         setWidth(1);
         setHeight(1);
         setDamage(150);
@@ -48,19 +47,24 @@ public class SpellObject extends GameObject {
                 setyVelocity(10);
                 setxVelocity(0);
                 break;
+                default:
+                    setxVelocity(0);
+                    setyVelocity(0);
+                    break;
+
         }
         move(fps);
         setRectHitBox();
     }
 
-    public static SpellObject getInstance(float startWorldX, float startWorldY, char type, int pixelsPerMetre) {
-        if (spellObject == null) {
-            spellObject = new SpellObject(startWorldX, startWorldY, type, pixelsPerMetre);
+    public static EnemySpellObject getInstance(float x, float y, char c, int pix){
+        if(spellObject == null){
+            spellObject = new EnemySpellObject(x, y, c, pix);
         }
         return spellObject;
     }
 
-    public void updatePosition(float x, float y) {
+    public void updatePosition(float x, float y){
         switch (this.getFacing()) {
             case LEFT:
                 x--;
@@ -77,13 +81,4 @@ public class SpellObject extends GameObject {
         }
         this.setWorldLocation(x, y, getWorldLocation().z);
     }
-
-    public void setSpellType(String spellType) {
-        switch (spellType){
-            case SpellNames.FIREBALL:
-                currentSpell = new FireBall();
-                break;
-        }
-    }
-    
 }

@@ -1,5 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.worldObjects;
 
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.levels.Location;
 
@@ -23,8 +24,8 @@ public class Home extends GameObject {
 
         setType(type);
 
-        setBitmapName("home");
-        setBadBitmapName("home");
+        setBitmapName(ObjectNames.HOME);
+        setBadBitmapName(ObjectNames.HOME);
 
         this.target = new Location(target.level, target.x, target.y);
 

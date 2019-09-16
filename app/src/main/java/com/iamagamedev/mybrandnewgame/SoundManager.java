@@ -18,11 +18,22 @@ public class SoundManager {
     private int fireBall = -1;
     private int hiroEnemy = -1;
     private int fireballExplode = -1;
+    private static SoundManager soundManager;
 
-    public void loadSound(Context context){
+    private SoundManager() {
+    }
+
+    public static SoundManager getInstance() {
+        if (soundManager == null) {
+            soundManager = new SoundManager();
+        }
+        return soundManager;
+    }
+
+    public void loadSound() {
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-        try{
-            AssetManager assetManager = context.getAssets();
+        try {
+            AssetManager assetManager = ThisApp.getInstance().getAssets();
             AssetFileDescriptor descriptor;
 
             descriptor = assetManager.openFd("PutThatCookieDown.ogg");
@@ -33,13 +44,13 @@ public class SoundManager {
 
             descriptor = assetManager.openFd("explode.ogg");
             fireballExplode = soundPool.load(descriptor, 0);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void playSound(String sound){
-        switch (sound){
+    public void playSound(String sound) {
+        switch (sound) {
             case "PutThatCookieDown":
                 soundPool.play(fireBall, 1, 1, 0, 0, 1);
                 break;
@@ -50,5 +61,8 @@ public class SoundManager {
                 soundPool.play(fireballExplode, 1, 1, 0, 0, 1);
                 break;
         }
+    }
+    public void playPTCD(){
+        soundPool.play(fireBall, 1, 1, 0, 0, 1);
     }
 }

@@ -11,8 +11,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
+import com.iamagamedev.mybrandnewgame.Constants.MapNames;
 import com.iamagamedev.mybrandnewgame.background.Background;
-import com.iamagamedev.mybrandnewgame.gameObjects.Hero;
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Home;
@@ -50,13 +51,13 @@ public class GameView extends SurfaceView implements Runnable {
         this.context = context;
         ourHolder = getHolder();
         paint = new Paint();
-        soundManager = new SoundManager();
-        soundManager.loadSound(context);
+        soundManager = SoundManager.getInstance();
+        soundManager.loadSound();
 
         viewport = new Viewport(screenWidth, screenHeight);
 
         //loadLevel("WorldMap", 3, 5);
-        loadLevel("LevelFirst", 1, 1);
+        loadLevel(MapNames.LEVEL_FIRST, 1, 1);
         //loadLevel("LevelHome", 2, 8);
         //loadLevel("LevelBattle", 2, 2);
     }
@@ -95,13 +96,13 @@ public class GameView extends SurfaceView implements Runnable {
                     go.setVisible(true);
                     checkForCollisions(go);
                     checkForEnemyCollisions(go);
-
                     if (lm.isPlaying()) {
                         go.update(fps);
 
-                        if (go.getType() == 'e') {
+                        if (go.getType() == CharConstants.ENEMY) {
                             Enemy enemy = (Enemy) go;
                             enemy.setWaypoint(lm.hero.getWorldLocation());
+                            enemy.isUnderAttack(lm.spellObject);
                         }
                     }
 
@@ -121,7 +122,7 @@ public class GameView extends SurfaceView implements Runnable {
         if (ourHolder.getSurface().isValid()) {
             canvas = ourHolder.lockCanvas();
             canvas.drawColor(Color.GREEN);
-            if (lm.level.equals("LevelHome")) {
+            if (lm.level.equals(MapNames.LEVEL_HOME)) {
                 canvas.drawColor(Color.CYAN);
             }
 
@@ -172,7 +173,7 @@ public class GameView extends SurfaceView implements Runnable {
 
             debuggingInfo(debugging, canvas);
 
-            if (!lm.level.equals("LevelBattle")) {
+            if (!lm.level.equals(MapNames.LEVEL_BATTLE)) {
                 paint.setColor(Color.BLACK);
 
                 Rect moveDirectionLeft = ic.getMoveDirectionLeft();
@@ -183,6 +184,7 @@ public class GameView extends SurfaceView implements Runnable {
                 canvas.drawRect(moveDirectionDown, paint);
                 Rect moveDirectionUp = ic.getMoveDirectionUp();
                 canvas.drawRect(moveDirectionUp, paint);
+                canvas.drawRect(ic.getFireButton(), paint);
             }
 
             ourHolder.unlockCanvasAndPost(canvas);
@@ -191,50 +193,43 @@ public class GameView extends SurfaceView implements Runnable {
 
 
     private void checkForCollisions(GameObject go) {
-        int hit = lm.hero.checkCollisions(go.getRectHitBox());
-        if (hit > 0) {
-            lm.hero.setHealth(lm.hero.getHealth() - go.getDamage());
-            switch (go.getType()) {
-                case 'h':
-                    Home home = (Home) go;
-                    Location t = home.getTarget();
-                    loadLevel(t.level, t.x, t.y);
-                    break;
-                case 'e':
-                    if (lm.hero.getHealth() <= 0) {
-                        lm.hero.setAnimFrameCount(1);
-                        lm.hero.setActive(false);
-                        lm.switchPlayingStatus();
-                    } else {
-                        //lm.hero.setWorldLocationX(lm.hero.getWorldLocation().x - 1);
+        if (go.getType() != CharConstants.SHIELD) {
+            int hit = lm.hero.checkCollisions(go.getRectHitBox());
+            if (hit > 0) {
+                lm.hero.setHealth(lm.hero.getHealth() - go.getDamage());
+                switch (go.getType()) {
+                    case CharConstants.HOME:
+                        Home home = (Home) go;
+                        Location t = home.getTarget();
+                        loadLevel(t.level, t.x, t.y);
+                        break;
+                    case CharConstants.ENEMY:
+                        if (lm.hero.getHealth() <= 0) {
+                            lm.hero.setAnimFrameCount(1);
+                            lm.hero.setActive(false);
+                            lm.switchPlayingStatus();
+                        } else {
+                            //lm.hero.setWorldLocationX(lm.hero.getWorldLocation().x - 1);
+                            if (hit == 1) {
+                                lm.hero.setxVelocity(0);
+                            }
+                            if (hit == 2) {
+                                lm.hero.setyVelocity(0);
+                            }
+                        }
+                        break;
+                    case CharConstants.TOWN:
+                        soundManager.playSound("PutThatCookieDown");
+                        break;
+                    default:
                         if (hit == 1) {
                             lm.hero.setxVelocity(0);
                         }
                         if (hit == 2) {
                             lm.hero.setyVelocity(0);
                         }
-                        if (hit == 3) {
-                            lm.hero.setyVelocity(0);
-                        }
-                    }
-                    break;
-                case 't':
-                    soundManager.playSound("PutThatCookieDown");
-                    break;
-                case '1':
-                    break;
-
-                default:
-                    if (hit == 1) {
-                        lm.hero.setxVelocity(0);
-                    }
-                    if (hit == 2) {
-                        lm.hero.setyVelocity(0);
-                    }
-                    if (hit == 3) {
-                        lm.hero.setyVelocity(0);
-                    }
-                    break;
+                        break;
+                }
             }
         }
     }
@@ -246,7 +241,9 @@ public class GameView extends SurfaceView implements Runnable {
             int col = enemy.checkForEnemyCollisions(go.getRectHitBox());
             if (col > 0) {
                 switch (go.getType()) {
-                    case 'w':
+                    case CharConstants.SHIELD:
+                    case CharConstants.SPELL:
+                    case CharConstants.WALL:
                         if (enemy.getRectHitBox().left < go.getRectHitBox().right) {
                             enemy.setWorldLocationX(go.getRectHitBox().right);
                         } else if (enemy.getRectHitBox().right > go.getRectHitBox().left) {
@@ -257,6 +254,7 @@ public class GameView extends SurfaceView implements Runnable {
                             enemy.setWorldLocationY(go.getRectHitBox().top);
                         }
                         break;
+
                     default:
 
                         break;
@@ -340,7 +338,7 @@ public class GameView extends SurfaceView implements Runnable {
         return true;
     }
 
-    private void debuggingInfo(boolean debugging, Canvas canvas){
+    private void debuggingInfo(boolean debugging, Canvas canvas) {
         if (debugging) {
             paint.setTextSize(26);
             paint.setTextAlign(Paint.Align.LEFT);
