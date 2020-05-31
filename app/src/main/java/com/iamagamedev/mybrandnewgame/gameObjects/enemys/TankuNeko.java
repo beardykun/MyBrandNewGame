@@ -1,7 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.enemys;
 
 import android.graphics.PointF;
-import android.util.Log;
 
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
@@ -10,17 +9,10 @@ import com.iamagamedev.mybrandnewgame.LocationXYZ;
 import com.iamagamedev.mybrandnewgame.RectHitBox;
 import com.iamagamedev.mybrandnewgame.Utils;
 import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject;
-import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemyShieldObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemySpellObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 
-import java.util.ArrayList;
-
-/**
- * Created by Михан on 17.05.2017.
- */
-
-public class Enemy extends EnemyObject {
+public class TankuNeko extends EnemyObject {
 
     private long lastWaypointSetTime;
     private PointF currentWaypoint;
@@ -28,7 +20,7 @@ public class Enemy extends EnemyObject {
     private final float MAX_Y_VELOCITY = 1.8f;
     private int pixelPerMetre;
 
-    public Enemy(float worldStartX, float worldStartY,
+    public TankuNeko(float worldStartX, float worldStartY,
                  char type, int pixelPerMetre) {
         this.pixelPerMetre = pixelPerMetre;
         final float HEIGHT = 1;
@@ -50,12 +42,10 @@ public class Enemy extends EnemyObject {
         setActive(true);
         setVisible(true);
         setFacing(LEFT);
-        setCanTalk(true);
-        setDialogs(getDialogsList());
 
         currentWaypoint = new PointF();
 
-        setBitmapName(ObjectNames.ENEMY);
+        setBitmapName("tanku_neko");
         setBadBitmapName(ObjectNames.ENEMY_BAD);
 
         setWorldLocation(worldStartX, worldStartY, 1);
@@ -80,8 +70,6 @@ public class Enemy extends EnemyObject {
         }
         move(fps);
         setRectHitBox();
-        //fireSpell();
-        //updateShieldLocation();
     }
 
     public void setWaypoint(LocationXYZ heroLocation) {
@@ -122,23 +110,7 @@ public class Enemy extends EnemyObject {
     public void isUnderAttack(SpellObject spellObject) {
         if (spellObject.getWorldLocation().x + 3 == this.getWorldLocation().x) {
             if (successfulDefenceOrAttack()) {
-                updateShieldLocation();
             }
         }
-    }
-
-    private void updateShieldLocation() {
-        EnemyShieldObject enemyShieldObject = EnemyShieldObject.Companion.getInstance(
-                getWorldLocation().x, getWorldLocation().y, CharConstants.ENEMY_SHIELD, pixelPerMetre);
-        enemyShieldObject.setWorldLocation(getWorldLocation().x - 0.5f, getWorldLocation().y - 0.5f, 0);
-    }
-
-    private ArrayList<String> getDialogsList() {
-        ArrayList<String> dialogs = new ArrayList<>(3);
-        dialogs.add("Hello who are you?");
-        dialogs.add("にゃんにゃんニャンコだぜ！");
-        dialogs.add("What the f*ck are you talking shithead?");
-        dialogs.add("It is にゃんこ大戦争! 死ね！");
-        return dialogs;
     }
 }

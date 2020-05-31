@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,8 +15,10 @@ import android.view.SurfaceView;
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.Constants.MapNames;
 import com.iamagamedev.mybrandnewgame.background.Background;
-import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
+import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
+import com.iamagamedev.mybrandnewgame.gameObjects.enemys.TankuNeko;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Home;
 import com.iamagamedev.mybrandnewgame.levels.Location;
 
@@ -43,7 +46,11 @@ public class GameView extends SurfaceView implements Runnable {
     long startFrameTime;
     long timeThisFrame;
     long fps;
+    private GameObject collidedObject;
     private boolean debugging = true;
+    public static boolean showTalkButton;
+    private int dialogLocationX;
+    private int dialogLocationY;
 
     public GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -89,21 +96,19 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void update() {
         for (GameObject go : lm.gameObjects) {
+            if (go.isTalking()) return;
             if (go.isActive()) {
                 if (!viewport.clipObjects(go.getWorldLocation().x,
                         go.getWorldLocation().y,
                         go.getWidth(), go.getHeight())) {
                     go.setVisible(true);
-                    checkForCollisions(go);
-                    checkForEnemyCollisions(go);
+
                     if (lm.isPlaying()) {
                         go.update(fps);
+                        checkForCollisions(go);
+                        checkForEnemyCollisions(go);
 
-                        if (go.getType() == CharConstants.ENEMY) {
-                            Enemy enemy = (Enemy) go;
-                            enemy.setWaypoint(lm.hero.getWorldLocation());
-                            enemy.isUnderAttack(lm.spellObject);
-                        }
+                        setEnemyWayPoint(go);
                     }
 
                 } else {
@@ -111,10 +116,21 @@ public class GameView extends SurfaceView implements Runnable {
                 }
             }
             if (lm.isPlaying()) {
-
                 viewport.setWorldCentre(lm.gameObjects.get(lm.hiroIndex).getWorldLocation().x,
                         lm.gameObjects.get(lm.hiroIndex).getWorldLocation().y);
             }
+        }
+    }
+
+    private void setEnemyWayPoint(GameObject go) {
+        if (go.getType() == CharConstants.ENEMY) {
+            Enemy enemy = (Enemy) go;
+            enemy.setWaypoint(lm.hero.getWorldLocation());
+            enemy.isUnderAttack(lm.spellObject);
+        } else if (go.getType() == CharConstants.ENEMY_TANKU) {
+            TankuNeko enemy = (TankuNeko) go;
+            enemy.setWaypoint(lm.hero.getWorldLocation());
+            enemy.isUnderAttack(lm.spellObject);
         }
     }
 
@@ -166,14 +182,16 @@ public class GameView extends SurfaceView implements Runnable {
                                         toScreen2D.left, toScreen2D.top, paint);
                             }
                         }
+                        if (lm.hero.isTalking() && showTalkButton) {
+                            drawDialog(canvas);
+                        }
                     }
                 }
             }
             //drawBackground(4, 0);
-
             debuggingInfo(debugging, canvas);
 
-            if (!lm.level.equals(MapNames.LEVEL_BATTLE)) {
+            if (!lm.hero.isTalking() && lm.isPlaying() && !lm.level.equals(MapNames.LEVEL_BATTLE)) {
                 paint.setColor(Color.BLACK);
 
                 Rect moveDirectionLeft = ic.getMoveDirectionLeft();
@@ -185,6 +203,8 @@ public class GameView extends SurfaceView implements Runnable {
                 Rect moveDirectionUp = ic.getMoveDirectionUp();
                 canvas.drawRect(moveDirectionUp, paint);
                 canvas.drawRect(ic.getFireButton(), paint);
+                if (showTalkButton)
+                    canvas.drawRect(ic.getDialogButton(), paint);
             }
 
             ourHolder.unlockCanvasAndPost(canvas);
@@ -195,18 +215,28 @@ public class GameView extends SurfaceView implements Runnable {
     private void checkForCollisions(GameObject go) {
         if (go.getType() != CharConstants.SHIELD) {
             int hit = lm.hero.checkCollisions(go.getRectHitBox());
+            if (hit > 0 && go.isCanTalk()) {
+                collidedObject = go;
+                showTalkButton = true;
+                dialogLocationX = (int) lm.hero.getWorldLocation().x;
+                dialogLocationY = (int) lm.hero.getWorldLocation().y;
+            }
+            if ((int) lm.hero.getWorldLocation().x != dialogLocationX || (int) lm.hero.getWorldLocation().y != dialogLocationY) {
+                collidedObject = null;
+                showTalkButton = false;
+            }
             if (hit > 0) {
+                Log.i("TAGGER", hit + "");
                 lm.hero.setHealth(lm.hero.getHealth() - go.getDamage());
                 switch (go.getType()) {
                     case CharConstants.HOME:
                         Home home = (Home) go;
                         Location t = home.getTarget();
-                        loadLevel(t.level, t.x, t.y);
+                        //loadLevel(t.level, t.x, t.y);
                         break;
                     case CharConstants.ENEMY:
                         if (lm.hero.getHealth() <= 0) {
                             lm.hero.setAnimFrameCount(1);
-                            lm.hero.setActive(false);
                             lm.switchPlayingStatus();
                         } else {
                             //lm.hero.setWorldLocationX(lm.hero.getWorldLocation().x - 1);
@@ -237,13 +267,21 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void checkForEnemyCollisions(GameObject go) {
         for (int i = 0; i < lm.enemisList.size(); i++) {
-            Enemy enemy = (Enemy) lm.gameObjects.get(lm.enemisList.get(i));
-            int col = enemy.checkForEnemyCollisions(go.getRectHitBox());
+            EnemyObject enemy = (EnemyObject) lm.gameObjects.get(lm.enemisList.get(i));
+            if (go == enemy) return;
+            int col = 0;
+            if (enemy.getType() == CharConstants.ENEMY) {
+                col = ((Enemy) enemy).checkForEnemyCollisions(go.getRectHitBox());
+            } else if (enemy.getType() == CharConstants.ENEMY_TANKU) {
+                col = ((TankuNeko) enemy).checkForEnemyCollisions(go.getRectHitBox());
+            }
             if (col > 0) {
                 switch (go.getType()) {
                     case CharConstants.SHIELD:
                     case CharConstants.SPELL:
                     case CharConstants.WALL:
+                    case CharConstants.ENEMY:
+                    case CharConstants.ENEMY_TANKU:
                         if (enemy.getRectHitBox().left < go.getRectHitBox().right) {
                             enemy.setWorldLocationX(go.getRectHitBox().right);
                         } else if (enemy.getRectHitBox().right > go.getRectHitBox().left) {
@@ -363,5 +401,15 @@ public class GameView extends SurfaceView implements Runnable {
             //for reset the number of clipped objects each frame
             viewport.resetNumClipped();
         }// End if(debugging)
+    }
+
+    private void drawDialog(Canvas canvas) {
+        paint.setTextSize(70);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.BLACK);
+        canvas.drawRect(ic.getGameDialogRect(), paint);
+        paint.setColor(Color.WHITE);
+        canvas.drawText(ic.getDialog(collidedObject), ic.getGameDialogRect().left + 30,
+                ic.getGameDialogRect().top + 100, paint);
     }
 }

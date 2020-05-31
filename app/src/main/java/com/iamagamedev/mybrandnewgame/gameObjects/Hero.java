@@ -1,16 +1,15 @@
 package com.iamagamedev.mybrandnewgame.gameObjects;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
+import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.Constants.SpellNames;
 import com.iamagamedev.mybrandnewgame.LocationXYZ;
-import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.RectHitBox;
-import com.iamagamedev.mybrandnewgame.SoundManager;
+import com.iamagamedev.mybrandnewgame.Utils;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.HeroSpell;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.ShieldSpellObject;
-import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 
 import java.util.ArrayList;
 
@@ -19,6 +18,8 @@ import java.util.ArrayList;
  */
 
 public class Hero extends GameObject {
+
+    private HeroSpell spellObject;
 
     private RectHitBox rectHitBoxBottom;
     private RectHitBox rectHitBoxLeft;
@@ -126,7 +127,7 @@ public class Hero extends GameObject {
         rectHitBoxRight.left = hiroX + getWidth() * .71f;
         rectHitBoxRight.bottom = hiroY + getHeight() * .8f;
         rectHitBoxRight.right = hiroX + getWidth() * .8f;
-        updateShieldLocation();
+        //updateShieldLocation();
     }
 
     public int checkCollisions(RectHitBox rectHitBox) {
@@ -185,12 +186,9 @@ public class Hero extends GameObject {
     }
 
     public void fireSpell() {
-        SoundManager.getInstance().playPTCD();
-        SpellObject spellObject = SpellObject.getInstance(this.getWorldLocation().x,
+        spellObject = HeroSpell.Companion.getInstance(this.getWorldLocation().x,
                 this.getWorldLocation().y, CharConstants.SPELL, pixelPerMetre);
-        spellObject.setFacing(this.getFacing());
-        spellObject.setSpellType(spellObjects.get(0));
-        spellObject.updatePosition(getWorldLocation().x, getWorldLocation().y);
+        Utils.fireSpell(spellObject, this, SpellNames.FIREBALL);
     }
 
     private void updateShieldLocation() {

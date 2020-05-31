@@ -11,7 +11,7 @@ abstract class EnemyObject : GameObject() {
     var enemyFear: Int = 0
 
     fun successfulDefenceOrAttack(): Boolean {
-        val random = Random.nextInt(enemySkill, 100) - enemyTired / 4
+        val random = Random.nextInt(enemySkill, 100)
         return random > Random.nextInt(100)
     }
 

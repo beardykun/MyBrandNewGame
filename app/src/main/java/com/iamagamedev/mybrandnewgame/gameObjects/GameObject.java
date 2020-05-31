@@ -9,6 +9,8 @@ import com.iamagamedev.mybrandnewgame.Animation;
 import com.iamagamedev.mybrandnewgame.LocationXYZ;
 import com.iamagamedev.mybrandnewgame.RectHitBox;
 
+import java.util.ArrayList;
+
 /**
  * Created by Михан on 24.05.2017.
  */
@@ -44,6 +46,11 @@ public abstract class GameObject {
 
     private String bitmapName;
     private String badBitmapName;
+    public float speed;
+    private boolean isTalking;
+    private ArrayList<String> dialogs;
+    private boolean canTalk;
+
 
     public abstract void update(long fps);
 
@@ -227,4 +234,35 @@ public abstract class GameObject {
         return damage;
     }
 
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public boolean isTalking() {
+        return isTalking;
+    }
+
+    public void setTalking(boolean talking) {
+        isTalking = talking;
+    }
+
+    public void setDialogs(ArrayList<String> dialogs) {
+        this.dialogs = dialogs;
+    }
+
+    public ArrayList<String> getDialogs() {
+        return dialogs;
+    }
+
+    public boolean isCanTalk() {
+        return canTalk;
+    }
+
+    public void setCanTalk(boolean canTalk) {
+        this.canTalk = canTalk;
+    }
 }

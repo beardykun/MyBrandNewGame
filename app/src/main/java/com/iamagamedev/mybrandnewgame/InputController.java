@@ -3,6 +3,8 @@ package com.iamagamedev.mybrandnewgame;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
+import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
+
 /**
  * Created by Михан on 23.05.2017.
  */
@@ -13,12 +15,12 @@ public class InputController {
     private Rect moveDirectionUp;
     private Rect moveDirectionDown;
     private Rect fireButton;
-    private int screenX;
-    private int screenY;
+    private Rect dialogButton;
+    private Rect gameDialogRect;
+    private int dialogCount;
+    private GameObject currentObject;
 
     public InputController(int screenWidth, int screenHeight) {
-        screenX = screenWidth;
-        screenY = screenHeight;
         int buttonWidth = screenWidth / 12;
         int buttonHeight = screenHeight / 7;
         int buttonPudding = buttonWidth / 80;
@@ -37,6 +39,12 @@ public class InputController {
 
         fireButton = new Rect(buttonPudding + buttonWidth / 2, screenHeight - buttonPudding - buttonHeight * 2,
                 buttonPudding + (int) (buttonWidth * 1.5), screenHeight - buttonPudding * 3 - buttonHeight);
+
+        dialogButton = new Rect(buttonPudding * 2 + buttonWidth / 2 + buttonWidth, screenHeight - buttonPudding - buttonHeight * 2,
+                buttonPudding * 2 + (int) (buttonWidth * 1.5) + buttonWidth, screenHeight - buttonPudding * 3 - buttonHeight);
+
+        gameDialogRect = new Rect((int) (screenWidth * .1f), (int) (screenHeight * .6f),
+                (int) (screenWidth - screenWidth * .1f), (int) (screenHeight - screenHeight * .1f));
     }
 
     public void handleIntent(MotionEvent motionEvent, LevelManager levelManager, SoundManager sm, Viewport vp) {
@@ -49,9 +57,6 @@ public class InputController {
 
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_MOVE:
-                        if (!levelManager.isPlaying()) {
-                            levelManager.switchPlayingStatus();
-                        }
                         if (moveDirectionLeft.contains(x, y)) {
                             levelManager.hero.setPressingUp(false);
                             levelManager.hero.setPressingLeft(true);
@@ -72,8 +77,6 @@ public class InputController {
                             levelManager.hero.setPressingLeft(false);
                             levelManager.hero.setPressingDown(true);
                             levelManager.hero.setPressingRight(false);
-                        } else if (fireButton.contains(x, y)) {
-                            levelManager.hero.fireSpell();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
@@ -82,6 +85,22 @@ public class InputController {
                         levelManager.hero.setPressingLeft(false);
                         levelManager.hero.setPressingDown(false);
                         levelManager.hero.setPressingRight(false);
+                        if (fireButton.contains(x, y)) {
+                            levelManager.hero.fireSpell();
+                        } else if (GameView.showTalkButton && dialogButton.contains(x, y)) {
+                            levelManager.hero.setTalking(true);
+                            levelManager.switchPlayingStatus();
+                        } else if (gameDialogRect.contains(x, y) && levelManager.hero.isTalking() && !levelManager.isPlaying()) {
+                            if (currentObject != null) {
+                                if (dialogCount == currentObject.getDialogs().size() - 1) {
+                                    dialogCount = 0;
+                                    levelManager.hero.setTalking(false);
+                                    levelManager.switchPlayingStatus();
+                                    return;
+                                }
+                                dialogCount++;
+                            }
+                        }
                         break;
                 }
             }
@@ -106,5 +125,22 @@ public class InputController {
 
     public Rect getFireButton() {
         return fireButton;
+    }
+
+    public Rect getDialogButton() {
+        return dialogButton;
+    }
+
+    public Rect getGameDialogRect() {
+        return gameDialogRect;
+    }
+
+    public String getDialog(GameObject gameObject) {
+        currentObject = gameObject;
+        String dialog = "";
+        if (gameObject != null && gameObject.getDialogs() != null && !gameObject.getDialogs().isEmpty()) {
+            dialog = gameObject.getDialogs().get(dialogCount);
+        }
+        return dialog;
     }
 }

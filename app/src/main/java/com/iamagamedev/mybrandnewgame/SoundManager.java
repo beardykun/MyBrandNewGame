@@ -1,6 +1,5 @@
 package com.iamagamedev.mybrandnewgame;
 
-import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.AudioManager;

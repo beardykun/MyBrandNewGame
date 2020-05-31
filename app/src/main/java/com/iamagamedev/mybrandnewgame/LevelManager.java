@@ -9,8 +9,10 @@ import com.iamagamedev.mybrandnewgame.background.Background;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.Hero;
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
+import com.iamagamedev.mybrandnewgame.gameObjects.enemys.TankuNeko;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemyShieldObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemySpellObject;
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.HeroSpell;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.ShieldSpellObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Flore;
@@ -43,7 +45,7 @@ public class LevelManager {
     int hiroIndex;
     int currentIndex = -1;
 
-    private boolean playing;
+    private boolean playing = true;
 
     private LevelData levelData;
     public ArrayList<GameObject> gameObjects;
@@ -127,6 +129,10 @@ public class LevelManager {
                             gameObjects.add(new Enemy(j, i, c, pixelsPerMetre));
                             enemisList.add(currentIndex);
                             break;
+                        case CharConstants.ENEMY_TANKU:
+                            gameObjects.add(new TankuNeko(j, i, c, pixelsPerMetre));
+                            enemisList.add(currentIndex);
+                            break;
                         case CharConstants.WALL:
                             gameObjects.add(new Wall(j, i, c));
                             break;
@@ -147,14 +153,14 @@ public class LevelManager {
                             gameObjects.add(new Forest(j, i, c));
                             break;
                         case CharConstants.SPELL:
-                            gameObjects.add(SpellObject.getInstance(j, i, c, pixelsPerMetre));
+                            gameObjects.add(HeroSpell.Companion.getInstance(j, i, c, pixelsPerMetre));
                             spellObject = (SpellObject) gameObjects.get(currentIndex);
                             break;
                         case CharConstants.SHIELD:
                             gameObjects.add(ShieldSpellObject.Companion.getInstance(j, i, c, pixelsPerMetre));
                             break;
                         case CharConstants.ENEMY_SPELL:
-                            gameObjects.add(EnemySpellObject.getInstance(j, i, c, pixelsPerMetre));
+                            gameObjects.add(EnemySpellObject.Companion.getInstance(j, i, c, pixelsPerMetre));
                             break;
                         case CharConstants.ENEMY_SHIELD:
                             gameObjects.add(EnemyShieldObject.Companion.getInstance(j, i, c, pixelsPerMetre));
@@ -194,9 +200,6 @@ public class LevelManager {
     private int getPosition(char type) {
         int index;
         switch (type) {
-            case CharConstants.NOTHING:
-                index = 0;
-                break;
             case CharConstants.GRASS:
                 index = 1;
                 break;
@@ -235,6 +238,9 @@ public class LevelManager {
                 break;
             case CharConstants.ENEMY_SHIELD:
                 index = 14;
+                break;
+            case CharConstants.ENEMY_TANKU:
+                index = 15;
                 break;
             default:
                 index = 0;

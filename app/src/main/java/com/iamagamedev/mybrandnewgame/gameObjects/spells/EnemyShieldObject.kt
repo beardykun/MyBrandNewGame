@@ -1,10 +1,9 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.spells
 
-import android.os.Parcel
-import android.os.Parcelable
+import com.iamagamedev.mybrandnewgame.Constants.SpellNames
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject
 
-class EnemyShieldObject() : GameObject(){
+class EnemyShieldObject() : GameObject() {
 
     private constructor(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : this() {
         width = 2f
@@ -15,8 +14,8 @@ class EnemyShieldObject() : GameObject(){
         isActive = true
 
         this.type = type
-        bitmapName = "shield"
-        badBitmapName = "shield"
+        bitmapName = SpellNames.SHIELD
+        badBitmapName = SpellNames.SHIELD
         setWorldLocation(startWorldX, startWorldY, 0)
         val ANIMATION_FPS = 16
         val ANIMATION_FRAME_COUNT = 4
@@ -28,14 +27,13 @@ class EnemyShieldObject() : GameObject(){
     }
 
     override fun update(fps: Long) {
-        move(fps)
         setRectHitBox()
     }
 
     companion object {
         private var shieldSpellObject: EnemyShieldObject? = null
         fun getInstance(startWorldX: Float, startWorldY: Float, type: Char,
-                                 pixelsPerMetre: Int): EnemyShieldObject? {
+                        pixelsPerMetre: Int): EnemyShieldObject? {
             if (shieldSpellObject == null) {
                 shieldSpellObject = EnemyShieldObject(startWorldX, startWorldY, type, pixelsPerMetre)
             }

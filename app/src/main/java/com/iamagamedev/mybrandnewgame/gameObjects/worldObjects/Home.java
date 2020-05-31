@@ -4,19 +4,20 @@ import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.levels.Location;
 
+import java.util.ArrayList;
+
 /**
  * Created by Михан on 01.06.2017.
  */
 
 public class Home extends GameObject {
 
-    Location target;
+    private Location target;
 
     public Home(float worldStartX, float worldStartY, char type, Location target) {
         final float HEIGHT = 1f;
         final float WIDTH = 1f;
         final float HEALTH = 1000;
-
 
         setWidth(WIDTH);
         setHeight(HEIGHT);
@@ -26,7 +27,6 @@ public class Home extends GameObject {
 
         setBitmapName(ObjectNames.HOME);
         setBadBitmapName(ObjectNames.HOME);
-
         this.target = new Location(target.level, target.x, target.y);
 
 
