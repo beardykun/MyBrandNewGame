@@ -23,7 +23,10 @@ public abstract class GameObject {
     public final int DOWN = 2;
 
     private LocationXYZ worldLocation;
-    private RectHitBox rectHitBox = new RectHitBox();
+    private RectHitBox rectHitBoxBottom = new RectHitBox();
+    private RectHitBox rectHitBoxLeft = new RectHitBox();
+    private RectHitBox rectHitBoxTop = new RectHitBox();
+    private RectHitBox rectHitBoxRight = new RectHitBox();
     private Animation animation = null;
     private boolean animated;
     private int animFps = 1;
@@ -79,10 +82,29 @@ public abstract class GameObject {
     }
 
     public void setRectHitBox() {
-        rectHitBox.setTop(worldLocation.y);
-        rectHitBox.setLeft(worldLocation.x);
-        rectHitBox.setBottom(worldLocation.y + height);
-        rectHitBox.setRight(worldLocation.x + width);
+        LocationXYZ locationXYZ = getWorldLocation();
+        float goX = locationXYZ.x;
+        float goY = locationXYZ.y;
+        //update the obj feet hitbox
+        rectHitBoxBottom.top = goY + getHeight() * .95f;
+        rectHitBoxBottom.left = goX + getWidth() * .2f;
+        rectHitBoxBottom.bottom = goY + getHeight() * .98f;
+        rectHitBoxBottom.right = goX + getWidth() * .8f;
+        // Update obj head hitbox
+        rectHitBoxTop.top = goY;
+        rectHitBoxTop.left = goX + getWidth() * .3f;
+        rectHitBoxTop.bottom = goY + getHeight() * .2f;
+        rectHitBoxTop.right = goX + getWidth() * .7f;
+        // Update obj left hitbox
+        rectHitBoxLeft.top = goY + getHeight() * .2f;
+        rectHitBoxLeft.left = goX + getWidth() * .2f;
+        rectHitBoxLeft.bottom = goY + getHeight() * .8f;
+        rectHitBoxLeft.right = goX + getWidth() * .3f;
+        // Update obj right hitbox
+        rectHitBoxRight.top = goY + getHeight() * .2f;
+        rectHitBoxRight.left = goX + getWidth() * .71f;
+        rectHitBoxRight.bottom = goY + getHeight() * .8f;
+        rectHitBoxRight.right = goX + getWidth() * .8f;
     }
 
     public void setAnimated(int pixelsPerMetre, boolean animated) {
@@ -104,8 +126,27 @@ public abstract class GameObject {
         }
     }
 
-    public RectHitBox getRectHitBox() {
-        return rectHitBox;
+    public int checkCollisions(RectHitBox rectHitBoxRight, RectHitBox rectHitBoxLeft,
+                               RectHitBox rectHitBoxTop, RectHitBox rectHitBoxBottom) {
+        int collided = 0;
+
+        if (this.getRectHitBoxLeft().intersects(rectHitBoxRight)) {
+            this.setWorldLocationX(rectHitBoxRight.right);
+            collided = 1;
+        }
+        if (this.getRectHitBoxRight().intersects(rectHitBoxLeft)) {
+            this.setWorldLocationX(rectHitBoxLeft.left - getWidth());
+            collided = 1;
+        }
+        if (this.getRectHitBoxBottom().intersects(rectHitBoxTop)) {
+            this.setWorldLocationY(rectHitBoxTop.top - getHeight());
+            collided = 2;
+        }
+        if (this.getRectHitBoxTop().intersects(rectHitBoxBottom)) {
+            this.setWorldLocationY(rectHitBoxBottom.bottom);
+            collided = 2;
+        }
+        return collided;
     }
 
     public void setBitmapName(String bitmapName) {
@@ -264,5 +305,21 @@ public abstract class GameObject {
 
     public void setCanTalk(boolean canTalk) {
         this.canTalk = canTalk;
+    }
+
+    public RectHitBox getRectHitBoxLeft() {
+        return rectHitBoxLeft;
+    }
+
+    public RectHitBox getRectHitBoxBottom() {
+        return rectHitBoxBottom;
+    }
+
+    public RectHitBox getRectHitBoxRight() {
+        return rectHitBoxRight;
+    }
+
+    public RectHitBox getRectHitBoxTop() {
+        return rectHitBoxTop;
     }
 }

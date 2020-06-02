@@ -22,6 +22,8 @@ import com.iamagamedev.mybrandnewgame.gameObjects.enemys.TankuNeko;
 import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Home;
 import com.iamagamedev.mybrandnewgame.levels.Location;
 
+import java.util.Random;
+
 
 /**
  * Created by Михан on 17.05.2017.
@@ -125,7 +127,16 @@ public class GameView extends SurfaceView implements Runnable {
     private void setEnemyWayPoint(GameObject go) {
         if (go.getType() == CharConstants.ENEMY) {
             Enemy enemy = (Enemy) go;
-            enemy.setWaypoint(lm.hero.getWorldLocation());
+            Random random = new Random();
+            int wayPointX = enemy.getStartLocationX() + (random.nextInt(6) - 3);
+            int wayPointY = enemy.getStartLocationY() + (random.nextInt(6) - 3);
+            for (GameObject gameObject : lm.gameObjects) {
+                if ((int) gameObject.getWorldLocation().x == wayPointX || (int) gameObject.getWorldLocation().y == wayPointY) {
+                    return;
+                }
+            }
+            //enemy.setWayPointHero(lm.hero.getWorldLocation());
+            enemy.setWayPoint(wayPointX, wayPointY);
             enemy.isUnderAttack(lm.spellObject);
         } else if (go.getType() == CharConstants.ENEMY_TANKU) {
             TankuNeko enemy = (TankuNeko) go;
@@ -214,7 +225,8 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void checkForCollisions(GameObject go) {
         if (go.getType() != CharConstants.SHIELD) {
-            int hit = lm.hero.checkCollisions(go.getRectHitBox());
+            int hit = lm.hero.checkCollisions(go.getRectHitBoxRight(), go.getRectHitBoxLeft(),
+                    go.getRectHitBoxTop(), go.getRectHitBoxBottom());
             if (hit > 0 && go.isCanTalk()) {
                 collidedObject = go;
                 showTalkButton = true;
@@ -226,7 +238,6 @@ public class GameView extends SurfaceView implements Runnable {
                 showTalkButton = false;
             }
             if (hit > 0) {
-                Log.i("TAGGER", hit + "");
                 lm.hero.setHealth(lm.hero.getHealth() - go.getDamage());
                 switch (go.getType()) {
                     case CharConstants.HOME:
@@ -270,11 +281,8 @@ public class GameView extends SurfaceView implements Runnable {
             EnemyObject enemy = (EnemyObject) lm.gameObjects.get(lm.enemisList.get(i));
             if (go == enemy) return;
             int col = 0;
-            if (enemy.getType() == CharConstants.ENEMY) {
-                col = ((Enemy) enemy).checkForEnemyCollisions(go.getRectHitBox());
-            } else if (enemy.getType() == CharConstants.ENEMY_TANKU) {
-                col = ((TankuNeko) enemy).checkForEnemyCollisions(go.getRectHitBox());
-            }
+            col = enemy.checkCollisions(go.getRectHitBoxRight(), go.getRectHitBoxLeft(),
+                    go.getRectHitBoxTop(), go.getRectHitBoxBottom());
             if (col > 0) {
                 switch (go.getType()) {
                     case CharConstants.SHIELD:
@@ -282,15 +290,6 @@ public class GameView extends SurfaceView implements Runnable {
                     case CharConstants.WALL:
                     case CharConstants.ENEMY:
                     case CharConstants.ENEMY_TANKU:
-                        if (enemy.getRectHitBox().left < go.getRectHitBox().right) {
-                            enemy.setWorldLocationX(go.getRectHitBox().right);
-                        } else if (enemy.getRectHitBox().right > go.getRectHitBox().left) {
-                            enemy.setWorldLocationX(go.getRectHitBox().left);
-                        } else if (enemy.getRectHitBox().top < go.getRectHitBox().bottom) {
-                            enemy.setWorldLocationY(go.getRectHitBox().bottom);
-                        } else if (enemy.getRectHitBox().bottom > go.getRectHitBox().top) {
-                            enemy.setWorldLocationY(go.getRectHitBox().top);
-                        }
                         break;
 
                     default:

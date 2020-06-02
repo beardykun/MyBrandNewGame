@@ -1,7 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.enemys;
 
 import android.graphics.PointF;
-import android.util.Log;
 
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
@@ -36,6 +35,8 @@ public class Enemy extends EnemyObject {
         final float HEALTH = 150;
         final float DAMAGE = 15;
 
+        setStartLocationX((int) worldStartX);
+        setStartLocationY((int) worldStartY);
         setWidth(WIDTH);
         setHeight(HEIGHT);
         setHealth(HEALTH);
@@ -64,16 +65,16 @@ public class Enemy extends EnemyObject {
 
     @Override
     public void update(long fps) {
-        if (currentWaypoint.x > getWorldLocation().x) {
+        if (currentWaypoint.x >= getWorldLocation().x) {
             setxVelocity(MAX_X_VELOCITY);
-        } else if (currentWaypoint.x < getWorldLocation().x) {
+        } else if (currentWaypoint.x <= getWorldLocation().x) {
             setxVelocity(-MAX_X_VELOCITY);
         } else {
             setxVelocity(0);
         }
         if (currentWaypoint.y >= getWorldLocation().y) {
             setyVelocity(MAX_Y_VELOCITY);
-        } else if (currentWaypoint.y < getWorldLocation().y) {
+        } else if (currentWaypoint.y <= getWorldLocation().y) {
             setyVelocity(-MAX_Y_VELOCITY);
         } else {
             setyVelocity(0);
@@ -84,33 +85,20 @@ public class Enemy extends EnemyObject {
         //updateShieldLocation();
     }
 
-    public void setWaypoint(LocationXYZ heroLocation) {
-        if (System.currentTimeMillis() > lastWaypointSetTime + 2000) {
+    public void setWayPoint(float x, float y) {
+        if (System.currentTimeMillis() > lastWaypointSetTime + 10000) {
             lastWaypointSetTime = System.currentTimeMillis();
-            currentWaypoint.x = heroLocation.x + 5;
-            currentWaypoint.y = heroLocation.y;
+            currentWaypoint.x = x;
+            currentWaypoint.y = y;
         }
     }
 
-    public int checkForEnemyCollisions(RectHitBox rectHitBox) {
-        int collided = 0;
-
-        if (this.getRectHitBox().intersects(rectHitBox)) {
-            if (this.getRectHitBox().top < rectHitBox.bottom) {
-                //this.setWorldLocationY(rectHitBox.bottom);
-                collided = 1;
-            } else if (this.getRectHitBox().bottom > rectHitBox.top) {
-                //this.setWorldLocationY(rectHitBox.top);
-                collided = 1;
-            } else if (this.getRectHitBox().left < rectHitBox.right) {
-                //this.setWorldLocationX(rectHitBox.right);
-                collided = 2;
-            } else if (this.getRectHitBox().right > rectHitBox.left) {
-                //this.setWorldLocationX(rectHitBox.left);
-                collided = 2;
-            }
+    public void setWayPointHero(LocationXYZ heroLocation) {
+        if (System.currentTimeMillis() > lastWaypointSetTime + 10000) {
+            lastWaypointSetTime = System.currentTimeMillis();
+            currentWaypoint.x = heroLocation.x;
+            currentWaypoint.y = heroLocation.y;
         }
-        return collided;
     }
 
     private void fireSpell() {

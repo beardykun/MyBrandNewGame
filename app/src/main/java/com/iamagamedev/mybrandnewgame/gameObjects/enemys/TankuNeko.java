@@ -80,27 +80,6 @@ public class TankuNeko extends EnemyObject {
         }
     }
 
-    public int checkForEnemyCollisions(RectHitBox rectHitBox) {
-        int collided = 0;
-
-        if (this.getRectHitBox().intersects(rectHitBox)) {
-            if (this.getRectHitBox().top < rectHitBox.bottom) {
-                //this.setWorldLocationY(rectHitBox.bottom);
-                collided = 1;
-            } else if (this.getRectHitBox().bottom > rectHitBox.top) {
-                //this.setWorldLocationY(rectHitBox.top);
-                collided = 1;
-            } else if (this.getRectHitBox().left < rectHitBox.right) {
-                //this.setWorldLocationX(rectHitBox.right);
-                collided = 2;
-            } else if (this.getRectHitBox().right > rectHitBox.left) {
-                //this.setWorldLocationX(rectHitBox.left);
-                collided = 2;
-            }
-        }
-        return collided;
-    }
-
     private void fireSpell() {
         EnemySpellObject enemySpellObject = EnemySpellObject.Companion.getInstance(
                 this.getWorldLocation().x, this.getWorldLocation().y, CharConstants.ENEMY_SPELL, pixelPerMetre);

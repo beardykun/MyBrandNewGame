@@ -43,7 +43,7 @@ public class SoundManager {
 
             descriptor = assetManager.openFd("explode.ogg");
             fireballExplode = soundPool.load(descriptor, 0);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

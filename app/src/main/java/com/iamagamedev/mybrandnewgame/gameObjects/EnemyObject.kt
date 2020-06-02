@@ -9,6 +9,8 @@ abstract class EnemyObject : GameObject() {
     var enemySkill: Int = 0
     var enemyTired: Int = 0
     var enemyFear: Int = 0
+    var startLocationX: Int = 0
+    var startLocationY: Int = 0
 
     fun successfulDefenceOrAttack(): Boolean {
         val random = Random.nextInt(enemySkill, 100)
