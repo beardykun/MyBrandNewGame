@@ -15,6 +15,8 @@ import android.view.SurfaceView;
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.Constants.MapNames;
 import com.iamagamedev.mybrandnewgame.background.Background;
+import com.iamagamedev.mybrandnewgame.collisions.EnemyCollisions;
+import com.iamagamedev.mybrandnewgame.collisions.HeroCollisions;
 import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
@@ -48,11 +50,8 @@ public class GameView extends SurfaceView implements Runnable {
     long startFrameTime;
     long timeThisFrame;
     long fps;
-    private GameObject collidedObject;
     private boolean debugging = true;
     public static boolean showTalkButton;
-    private int dialogLocationX;
-    private int dialogLocationY;
 
     public GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -107,8 +106,8 @@ public class GameView extends SurfaceView implements Runnable {
 
                     if (lm.isPlaying()) {
                         go.update(fps);
-                        checkForCollisions(go);
-                        checkForEnemyCollisions(go);
+                        HeroCollisions.checkForCollisions(go, lm, soundManager);
+                        EnemyCollisions.checkForEnemyCollisions(go, lm);
 
                         setEnemyWayPoint(go);
                     }
@@ -127,16 +126,16 @@ public class GameView extends SurfaceView implements Runnable {
     private void setEnemyWayPoint(GameObject go) {
         if (go.getType() == CharConstants.ENEMY) {
             Enemy enemy = (Enemy) go;
-            Random random = new Random();
+        /*    Random random = new Random();
             int wayPointX = enemy.getStartLocationX() + (random.nextInt(6) - 3);
             int wayPointY = enemy.getStartLocationY() + (random.nextInt(6) - 3);
             for (GameObject gameObject : lm.gameObjects) {
                 if ((int) gameObject.getWorldLocation().x == wayPointX || (int) gameObject.getWorldLocation().y == wayPointY) {
                     return;
                 }
-            }
-            //enemy.setWayPointHero(lm.hero.getWorldLocation());
-            enemy.setWayPoint(wayPointX, wayPointY);
+            }*/
+            enemy.setWayPointHero(lm.hero.getWorldLocation());
+            //enemy.setWayPoint(wayPointX, wayPointY);
             enemy.isUnderAttack(lm.spellObject);
         } else if (go.getType() == CharConstants.ENEMY_TANKU) {
             TankuNeko enemy = (TankuNeko) go;
@@ -219,84 +218,6 @@ public class GameView extends SurfaceView implements Runnable {
             }
 
             ourHolder.unlockCanvasAndPost(canvas);
-        }
-    }
-
-
-    private void checkForCollisions(GameObject go) {
-        if (go.getType() != CharConstants.SHIELD) {
-            int hit = lm.hero.checkCollisions(go.getRectHitBoxRight(), go.getRectHitBoxLeft(),
-                    go.getRectHitBoxTop(), go.getRectHitBoxBottom());
-            if (hit > 0 && go.isCanTalk()) {
-                collidedObject = go;
-                showTalkButton = true;
-                dialogLocationX = (int) lm.hero.getWorldLocation().x;
-                dialogLocationY = (int) lm.hero.getWorldLocation().y;
-            }
-            if ((int) lm.hero.getWorldLocation().x != dialogLocationX || (int) lm.hero.getWorldLocation().y != dialogLocationY) {
-                collidedObject = null;
-                showTalkButton = false;
-            }
-            if (hit > 0) {
-                lm.hero.setHealth(lm.hero.getHealth() - go.getDamage());
-                switch (go.getType()) {
-                    case CharConstants.HOME:
-                        Home home = (Home) go;
-                        Location t = home.getTarget();
-                        //loadLevel(t.level, t.x, t.y);
-                        break;
-                    case CharConstants.ENEMY:
-                        if (lm.hero.getHealth() <= 0) {
-                            lm.hero.setAnimFrameCount(1);
-                            lm.switchPlayingStatus();
-                        } else {
-                            //lm.hero.setWorldLocationX(lm.hero.getWorldLocation().x - 1);
-                            if (hit == 1) {
-                                lm.hero.setxVelocity(0);
-                            }
-                            if (hit == 2) {
-                                lm.hero.setyVelocity(0);
-                            }
-                        }
-                        break;
-                    case CharConstants.TOWN:
-                        soundManager.playSound("PutThatCookieDown");
-                        break;
-                    default:
-                        if (hit == 1) {
-                            lm.hero.setxVelocity(0);
-                        }
-                        if (hit == 2) {
-                            lm.hero.setyVelocity(0);
-                        }
-                        break;
-                }
-            }
-        }
-    }
-
-
-    private void checkForEnemyCollisions(GameObject go) {
-        for (int i = 0; i < lm.enemisList.size(); i++) {
-            EnemyObject enemy = (EnemyObject) lm.gameObjects.get(lm.enemisList.get(i));
-            if (go == enemy) return;
-            int col = 0;
-            col = enemy.checkCollisions(go.getRectHitBoxRight(), go.getRectHitBoxLeft(),
-                    go.getRectHitBoxTop(), go.getRectHitBoxBottom());
-            if (col > 0) {
-                switch (go.getType()) {
-                    case CharConstants.SHIELD:
-                    case CharConstants.SPELL:
-                    case CharConstants.WALL:
-                    case CharConstants.ENEMY:
-                    case CharConstants.ENEMY_TANKU:
-                        break;
-
-                    default:
-
-                        break;
-                }
-            }
         }
     }
 
@@ -408,7 +329,7 @@ public class GameView extends SurfaceView implements Runnable {
         paint.setColor(Color.BLACK);
         canvas.drawRect(ic.getGameDialogRect(), paint);
         paint.setColor(Color.WHITE);
-        canvas.drawText(ic.getDialog(collidedObject), ic.getGameDialogRect().left + 30,
+        canvas.drawText(ic.getDialog(HeroCollisions.getCollidedObject()), ic.getGameDialogRect().left + 30,
                 ic.getGameDialogRect().top + 100, paint);
     }
 }

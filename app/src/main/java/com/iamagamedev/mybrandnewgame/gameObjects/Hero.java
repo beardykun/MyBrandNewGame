@@ -117,7 +117,7 @@ public class Hero extends GameObject {
     public void fireSpell() {
         spellObject = HeroSpell.Companion.getInstance(this.getWorldLocation().x,
                 this.getWorldLocation().y, CharConstants.SPELL, pixelPerMetre);
-        Utils.fireSpell(spellObject, this, SpellNames.FIREBALL);
+        Utils.fireSpell(spellObject, Hero.this, SpellNames.FIREBALL);
     }
 
     private void updateShieldLocation() {

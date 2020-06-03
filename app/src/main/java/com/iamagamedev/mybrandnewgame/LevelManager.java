@@ -37,11 +37,11 @@ import java.util.ArrayList;
 public class LevelManager {
 
     String level;
-    int mapWidth;
-    int mapHeight;
+    private int mapWidth;
+    private int mapHeight;
 
-    Hero hero;
-    SpellObject spellObject;
+    public Hero hero;
+    public SpellObject spellObject;
     int hiroIndex;
     int currentIndex = -1;
 
@@ -50,7 +50,7 @@ public class LevelManager {
     private LevelData levelData;
     public ArrayList<GameObject> gameObjects;
     ArrayList<Background> backgrounds;
-    ArrayList<Integer> enemisList;
+    public ArrayList<Integer> enemisList;
 
     private Bitmap[] bitmapsArray;
     private Bitmap[] badBitmapArray;

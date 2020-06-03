@@ -1,12 +1,13 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.enemys;
 
 import android.graphics.PointF;
+import android.os.Handler;
+import android.util.Log;
 
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
 import com.iamagamedev.mybrandnewgame.Constants.SpellNames;
 import com.iamagamedev.mybrandnewgame.LocationXYZ;
-import com.iamagamedev.mybrandnewgame.RectHitBox;
 import com.iamagamedev.mybrandnewgame.Utils;
 import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.EnemyShieldObject;
@@ -94,9 +95,9 @@ public class Enemy extends EnemyObject {
     }
 
     public void setWayPointHero(LocationXYZ heroLocation) {
-        if (System.currentTimeMillis() > lastWaypointSetTime + 10000) {
+        if (System.currentTimeMillis() > lastWaypointSetTime + 2000) {
             lastWaypointSetTime = System.currentTimeMillis();
-            currentWaypoint.x = heroLocation.x;
+            currentWaypoint.x = heroLocation.x + 3;
             currentWaypoint.y = heroLocation.y;
         }
     }
@@ -108,7 +109,7 @@ public class Enemy extends EnemyObject {
     }
 
     public void isUnderAttack(SpellObject spellObject) {
-        if (spellObject.getWorldLocation().x + 3 == this.getWorldLocation().x) {
+        if (spellObject.getWorldLocation().x - this.getWorldLocation().x < 3) {
             if (successfulDefenceOrAttack()) {
                 updateShieldLocation();
             }
@@ -116,9 +117,9 @@ public class Enemy extends EnemyObject {
     }
 
     private void updateShieldLocation() {
-        EnemyShieldObject enemyShieldObject = EnemyShieldObject.Companion.getInstance(
-                getWorldLocation().x, getWorldLocation().y, CharConstants.ENEMY_SHIELD, pixelPerMetre);
-        enemyShieldObject.setWorldLocation(getWorldLocation().x - 0.5f, getWorldLocation().y - 0.5f, 0);
+        EnemyShieldObject.Companion.getInstance(
+                getWorldLocation().x, getWorldLocation().y, CharConstants.ENEMY_SHIELD, pixelPerMetre).
+                setWorldLocation(getWorldLocation().x - 0.5f, getWorldLocation().y - 0.5f, 0);
     }
 
     private ArrayList<String> getDialogsList() {

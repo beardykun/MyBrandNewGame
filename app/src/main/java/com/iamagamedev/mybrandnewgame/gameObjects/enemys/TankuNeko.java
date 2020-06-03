@@ -1,6 +1,7 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.enemys;
 
 import android.graphics.PointF;
+import android.util.Log;
 
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;
@@ -87,7 +88,7 @@ public class TankuNeko extends EnemyObject {
     }
 
     public void isUnderAttack(SpellObject spellObject) {
-        if (spellObject.getWorldLocation().x + 3 == this.getWorldLocation().x) {
+        if (spellObject.getWorldLocation().x - this.getWorldLocation().x < 3) {
             if (successfulDefenceOrAttack()) {
             }
         }

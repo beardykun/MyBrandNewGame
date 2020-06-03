@@ -3,7 +3,6 @@ package com.iamagamedev.mybrandnewgame;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 
