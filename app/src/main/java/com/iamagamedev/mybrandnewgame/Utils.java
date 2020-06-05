@@ -7,21 +7,24 @@ import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject;
 
 public class Utils {
+    private static Handler handler = new Handler(Looper.getMainLooper());
 
-    public static void fireSpell(SpellObject spellObject, GameObject gameObject, String spellType) {
-        if (spellObject.isVisible())return;
+    public static void fireSpell(final SpellObject spellObject, GameObject gameObject, String spellType) {
         SoundManager.getInstance().playPTCD();
+        spellObject.setActive(false);
+        spellObject.setMoves(false);
+        spellObject.setVisible(false);
         spellObject.setFacing(gameObject.getFacing());
         spellObject.setSpellType(spellType, spellObject);
         spellObject.updatePosition(gameObject.getWorldLocation().x, gameObject.getWorldLocation().y);
-        spellObject.setMoves(false);
-        Handler handler = new Handler(Looper.getMainLooper());
-        final SpellObject finalSpellObject = spellObject;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                finalSpellObject.setMoves(true);
+                spellObject.setAnimated(LevelManager.pixelsPerMetre, true);
+                spellObject.setVisible(true);
+                spellObject.setActive(true);
+                spellObject.setMoves(true);
             }
-        },spellObject.getWaitingTime());
+        }, spellObject.getWaitingTime());
     }
 }

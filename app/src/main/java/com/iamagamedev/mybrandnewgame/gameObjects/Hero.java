@@ -1,6 +1,8 @@
 package com.iamagamedev.mybrandnewgame.gameObjects;
 
 import android.content.Context;
+import android.os.Looper;
+import android.util.Log;
 
 import com.iamagamedev.mybrandnewgame.Constants.CharConstants;
 import com.iamagamedev.mybrandnewgame.Constants.ObjectNames;

@@ -38,7 +38,7 @@ public class HeroCollisions {
                         break;
                     case CharConstants.ENEMY:
                         if (lm.hero.getHealth() <= 0) {
-                            lm.hero.setAnimFrameCount(1);
+                            lm.hero.setActive(false);
                             lm.switchPlayingStatus();
                         } else {
                             //lm.hero.setWorldLocationX(lm.hero.getWorldLocation().x - 1);

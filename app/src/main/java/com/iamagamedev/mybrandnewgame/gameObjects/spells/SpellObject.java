@@ -1,13 +1,24 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.spells;
 
+import android.util.Log;
+
 import com.iamagamedev.mybrandnewgame.Constants.SpellNames;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 
 public abstract class SpellObject extends GameObject {
 
     private int waitingTime = 3000;
+    private float x;
+    private float y;
 
     public void updatePosition(float x, float y) {
+        this.x = x;
+        this.y = y;
+        this.setWorldLocation(x, y, getWorldLocation().z);
+    }
+
+    @Override
+    public void update(long fps) {
         switch (this.getFacing()) {
             case LEFT:
                 x--;
@@ -22,7 +33,7 @@ public abstract class SpellObject extends GameObject {
                 y++;
                 break;
         }
-        this.setWorldLocation(x, y, getWorldLocation().z);
+        super.move(fps);
     }
 
     public void setSpellType(String spellType, SpellObject spellObject) {

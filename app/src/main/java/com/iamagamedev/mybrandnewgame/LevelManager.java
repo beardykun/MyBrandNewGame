@@ -51,6 +51,7 @@ public class LevelManager {
     public ArrayList<GameObject> gameObjects;
     ArrayList<Background> backgrounds;
     public ArrayList<Integer> enemisList;
+    public static int pixelsPerMetre;
 
     private Bitmap[] bitmapsArray;
     private Bitmap[] badBitmapArray;
@@ -58,7 +59,7 @@ public class LevelManager {
     public LevelManager(Context context, int pixelsPerMetre,
                         String level, float hiroX, float hiroY) {
         this.level = level;
-
+        LevelManager.pixelsPerMetre = pixelsPerMetre;
         getLevelName(level);
 
         gameObjects = new ArrayList<>();

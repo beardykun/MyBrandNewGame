@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,14 +16,10 @@ import com.iamagamedev.mybrandnewgame.Constants.MapNames;
 import com.iamagamedev.mybrandnewgame.background.Background;
 import com.iamagamedev.mybrandnewgame.collisions.EnemyCollisions;
 import com.iamagamedev.mybrandnewgame.collisions.HeroCollisions;
-import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject;
+import com.iamagamedev.mybrandnewgame.collisions.SpellCollisions;
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject;
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy;
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.TankuNeko;
-import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.Home;
-import com.iamagamedev.mybrandnewgame.levels.Location;
-
-import java.util.Random;
 
 
 /**
@@ -108,6 +103,7 @@ public class GameView extends SurfaceView implements Runnable {
                         go.update(fps);
                         HeroCollisions.checkForCollisions(go, lm, soundManager);
                         EnemyCollisions.checkForEnemyCollisions(go, lm);
+                        SpellCollisions.checkForSpellCollisions(go, lm);
 
                         setEnemyWayPoint(go);
                     }
