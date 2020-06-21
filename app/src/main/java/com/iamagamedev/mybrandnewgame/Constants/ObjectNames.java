@@ -3,7 +3,7 @@ package com.iamagamedev.mybrandnewgame.Constants;
 public class ObjectNames {
 
     public static final String ENEMY = "nyanko";
-    public static final String ENEMY_BAD = "enemy_bad";
+    public static final String ENEMY_BAD = "nyanko_dead";
     public static final String ENEMY_BLOW = "enemy_blow";
     public static final String ENEMY_DEAD = "enemy_dead";
     public static final String EVIL_MAGE = "evil_mage";

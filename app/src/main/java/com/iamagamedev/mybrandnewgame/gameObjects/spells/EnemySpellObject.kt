@@ -2,17 +2,17 @@ package com.iamagamedev.mybrandnewgame.gameObjects.spells
 
 import com.iamagamedev.mybrandnewgame.Constants.SpellNames
 
-class EnemySpellObject private constructor(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : SpellObject() {
+class EnemySpellObject(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : SpellObject() {
 
     init {
         width = 1f
         height = 1f
-        damage = 150f
+        damage = 150
         isVisible = true
-        isMoves = true
+        this.isMoves = true
         isActive = true
 
-        setType(type)
+        this.type = type
         bitmapName = SpellNames.FIREBALL
         badBitmapName = SpellNames.FIREBALL_BAD
         setWorldLocation(startWorldX, startWorldY, 0)
@@ -28,19 +28,19 @@ class EnemySpellObject private constructor(startWorldX: Float, startWorldY: Floa
     override fun update(fps: Long) {
         when (this.facing) {
             LEFT -> {
-                setxVelocity(-getSpeed())
+                setxVelocity(-speed)
                 setyVelocity(0f)
             }
             RIGHT -> {
-                setxVelocity(getSpeed())
+                setxVelocity(speed)
                 setyVelocity(0f)
             }
             UP -> {
-                setyVelocity(-getSpeed())
+                setyVelocity(-speed)
                 setxVelocity(0f)
             }
             DOWN -> {
-                setyVelocity(getSpeed())
+                setyVelocity(speed)
                 setxVelocity(0f)
             }
             else -> {
@@ -61,22 +61,6 @@ class EnemySpellObject private constructor(startWorldX: Float, startWorldY: Floa
             UP -> y--
             DOWN -> y++
         }
-        this.setWorldLocation(x, y, worldLocation.z)
-    }
-
-    override fun setSpellType(spellType: String, spellObject: SpellObject) {
-        super.setSpellType(spellType, this)
-    }
-
-    companion object {
-
-        private var spellObject: EnemySpellObject? = null
-
-        fun getInstance(x: Float, y: Float, c: Char, pix: Int): EnemySpellObject {
-            if (spellObject == null) {
-                spellObject = EnemySpellObject(x, y, c, pix)
-            }
-            return spellObject!!
-        }
+        this.setWorldLocation(x, y, worldLocation!!.z)
     }
 }

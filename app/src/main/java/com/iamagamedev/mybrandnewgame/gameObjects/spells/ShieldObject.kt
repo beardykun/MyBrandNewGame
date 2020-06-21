@@ -2,12 +2,12 @@ package com.iamagamedev.mybrandnewgame.gameObjects.spells
 
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject
 
-class ShieldSpellObject() : GameObject() {
+class ShieldObject(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : GameObject() {
 
-    private constructor(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : this() {
+    init {
         width = 2f
         height = 2f
-        damage = 0f
+        damage = 0
         isVisible = true
         isMoves = false
         isActive = true
@@ -29,16 +29,4 @@ class ShieldSpellObject() : GameObject() {
         move(fps)
         setRectHitBox()
     }
-
-    companion object {
-        private var shieldSpellObject: ShieldSpellObject? = null
-        fun getInstance(startWorldX: Float, startWorldY: Float, type: Char,
-                        pixelsPerMetre: Int): ShieldSpellObject? {
-
-        if (shieldSpellObject == null) {
-            shieldSpellObject = ShieldSpellObject(startWorldX, startWorldY, type, pixelsPerMetre)
-        }
-        return shieldSpellObject
-    }
-}
 }

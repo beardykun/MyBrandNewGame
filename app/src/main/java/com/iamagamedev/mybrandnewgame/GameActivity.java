@@ -32,7 +32,7 @@ public class GameActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        gameView.pause();
+        gameView.pause(isFinishing());
     }
 
     @Override

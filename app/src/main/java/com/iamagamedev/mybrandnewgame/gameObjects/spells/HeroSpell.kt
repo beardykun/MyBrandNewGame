@@ -2,24 +2,24 @@ package com.iamagamedev.mybrandnewgame.gameObjects.spells
 
 import com.iamagamedev.mybrandnewgame.Constants.SpellNames
 
-class HeroSpell() : SpellObject() {
+class HeroSpell(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : SpellObject() {
 
     override fun update(fps: Long) {
         when (this.facing) {
             LEFT -> {
-                setxVelocity(-getSpeed())
+                setxVelocity(-speed)
                 setyVelocity(0f)
             }
             RIGHT -> {
-                setxVelocity(getSpeed())
+                setxVelocity(speed)
                 setyVelocity(0f)
             }
             UP -> {
-                setyVelocity(-getSpeed())
+                setyVelocity(-speed)
                 setxVelocity(0f)
             }
             DOWN -> {
-                setyVelocity(getSpeed())
+                setyVelocity(speed)
                 setxVelocity(0f)
             }
             else -> {
@@ -31,27 +31,15 @@ class HeroSpell() : SpellObject() {
         setRectHitBox()
     }
 
-    companion object {
-
-        private var heroSpell: HeroSpell? = null
-
-        fun getInstance(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int): HeroSpell {
-            if (heroSpell == null) {
-                heroSpell = HeroSpell(startWorldX, startWorldY, type, pixelsPerMetre)
-            }
-            return heroSpell!!
-        }
-    }
-
-    private constructor(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : this() {
+    init {
         width = 1f
         height = 1f
-        damage = 150f
+        damage = 150
         isVisible = true
         isMoves = true
         isActive = true
 
-        setType(type)
+        this.type = type
         bitmapName = SpellNames.FIREBALL
         badBitmapName = SpellNames.FIREBALL_BAD
         setWorldLocation(startWorldX, startWorldY, 1)
@@ -62,9 +50,5 @@ class HeroSpell() : SpellObject() {
         setAnimFrameCount(ANIMATION_FRAME_COUNT)
         setAnimated(pixelsPerMetre, true)
         setRectHitBox()
-    }
-
-    override fun setSpellType(spellType: String?, spellObject: SpellObject) {
-        super.setSpellType(spellType, heroSpell)
     }
 }

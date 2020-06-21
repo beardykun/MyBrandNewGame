@@ -8,7 +8,7 @@ class SpellUtils {
         fun setFireball(spellObject: SpellObject) {
             spellObject.width = 1f
             spellObject.height = 1f
-            spellObject.damage = 150f
+            spellObject.damage = 150
             spellObject.speed = 10f
 
             spellObject.bitmapName = SpellNames.FIREBALL

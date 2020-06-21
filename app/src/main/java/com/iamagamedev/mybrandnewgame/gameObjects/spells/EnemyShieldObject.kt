@@ -3,15 +3,16 @@ package com.iamagamedev.mybrandnewgame.gameObjects.spells
 import com.iamagamedev.mybrandnewgame.Constants.SpellNames
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject
 
-class EnemyShieldObject() : GameObject() {
+class EnemyShieldObject(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : GameObject() {
 
-    private constructor(startWorldX: Float, startWorldY: Float, type: Char, pixelsPerMetre: Int) : this() {
+    init {
         width = 2f
         height = 2f
-        damage = 0f
+        damage = 0
         isVisible = true
         isMoves = false
         isActive = true
+        health = 100000
 
         this.type = type
         bitmapName = SpellNames.SHIELD
@@ -28,16 +29,5 @@ class EnemyShieldObject() : GameObject() {
 
     override fun update(fps: Long) {
         setRectHitBox()
-    }
-
-    companion object {
-        private var shieldSpellObject: EnemyShieldObject? = null
-        fun getInstance(startWorldX: Float, startWorldY: Float, type: Char,
-                        pixelsPerMetre: Int): EnemyShieldObject? {
-            if (shieldSpellObject == null) {
-                shieldSpellObject = EnemyShieldObject(startWorldX, startWorldY, type, pixelsPerMetre)
-            }
-            return shieldSpellObject
-        }
     }
 }
