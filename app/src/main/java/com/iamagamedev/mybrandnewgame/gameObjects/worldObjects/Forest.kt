@@ -1,6 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.worldObjects
 
-import com.iamagamedev.mybrandnewgame.Constants.ObjectNames
+import com.iamagamedev.mybrandnewgame.constants.ObjectNames
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject
 
 /**
@@ -10,7 +10,6 @@ class Forest(worldStartX: Float, worldStartY: Float, type: Char) : GameObject() 
     override fun update(fps: Long) {}
 
     init {
-        var type = type
         val HEIGHT = 1f
         val WIDTH = 1f
         height = HEIGHT

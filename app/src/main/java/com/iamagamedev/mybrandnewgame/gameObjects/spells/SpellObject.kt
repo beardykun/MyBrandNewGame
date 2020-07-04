@@ -1,6 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.spells
 
-import com.iamagamedev.mybrandnewgame.Constants.SpellNames
+import com.iamagamedev.mybrandnewgame.constants.SpellNames
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellUtils.Companion.setFireball
 

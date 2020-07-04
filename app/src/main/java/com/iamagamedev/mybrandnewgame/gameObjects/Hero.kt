@@ -1,11 +1,13 @@
 package com.iamagamedev.mybrandnewgame.gameObjects
 
 import android.content.Context
-import com.iamagamedev.mybrandnewgame.Constants.CharConstants
-import com.iamagamedev.mybrandnewgame.Constants.ObjectNames
-import com.iamagamedev.mybrandnewgame.Constants.SpellNames
+import com.iamagamedev.mybrandnewgame.constants.CharConstants
+import com.iamagamedev.mybrandnewgame.constants.ObjectNames
+import com.iamagamedev.mybrandnewgame.constants.SpellNames
 import com.iamagamedev.mybrandnewgame.LevelManager
 import com.iamagamedev.mybrandnewgame.Utils.fireSpell
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.HeroSpell
+import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject
 import java.util.*
 
 /**
@@ -13,7 +15,7 @@ import java.util.*
  */
 class Hero(context: Context?, worldStartX: Float, worldStartY: Float,
            private val pixelPerMetre: Int) : GameObject() {
-    private val spellObjects: ArrayList<String>
+    private val spellObjects: ArrayList<String> = ArrayList()
     private val MAX_VELOCITY = 2f
     private var pressingRight = false
     private var pressingLeft = false
@@ -78,7 +80,10 @@ class Hero(context: Context?, worldStartX: Float, worldStartY: Float,
     }
 
     fun fireSpell() {
-        fireSpell(LevelManager.spellObject!!, this@Hero, SpellNames.FIREBALL)
+        if (LevelManager.spellObject === null) {
+            LevelManager.spellObject = HeroSpell(this.worldLocation!!.x, this.worldLocation!!.y, CharConstants.SPELL, pixelPerMetre)
+        }
+        LevelManager.spellObject?.let { fireSpell(it, this@Hero, SpellNames.FIREBALL) }
     }
 
     private fun updateShieldLocation() {
@@ -86,7 +91,6 @@ class Hero(context: Context?, worldStartX: Float, worldStartY: Float,
     }
 
     init {
-        spellObjects = ArrayList()
         spellObjects.add(SpellNames.FIREBALL)
         val HEALTH = 50
         val HEIGHT = 1f

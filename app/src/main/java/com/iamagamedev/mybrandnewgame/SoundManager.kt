@@ -15,7 +15,7 @@ class SoundManager private constructor() {
     fun loadSound() {
         soundPool = SoundPool(10, AudioManager.STREAM_MUSIC, 0)
         try {
-            val assetManager = ThisApp.getInstance().assets
+            val assetManager = ThisApp.instance!!.assets
             var descriptor: AssetFileDescriptor
             descriptor = assetManager.openFd("PutThatCookieDown.ogg")
             fireBall = soundPool!!.load(descriptor, 0)

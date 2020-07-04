@@ -2,9 +2,11 @@ package com.iamagamedev.mybrandnewgame
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.iamagamedev.mybrandnewgame.Constants.CharConstants
-import com.iamagamedev.mybrandnewgame.Constants.MapNames
+import android.util.Log
 import com.iamagamedev.mybrandnewgame.background.Background
+import com.iamagamedev.mybrandnewgame.constants.CharConstants
+import com.iamagamedev.mybrandnewgame.constants.MapNames
+import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject
 import com.iamagamedev.mybrandnewgame.gameObjects.GameObject
 import com.iamagamedev.mybrandnewgame.gameObjects.Hero
 import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy
@@ -14,13 +16,15 @@ import com.iamagamedev.mybrandnewgame.gameObjects.worldObjects.*
 import com.iamagamedev.mybrandnewgame.levels.*
 import java.util.*
 
+
 /**
  * Created by Михан on 24.05.2017.
  */
-class LevelManager(context: Context?, pixelsPerMetre: Int,
-                   var level: String, hiroX: Float, hiroY: Float) {
+class LevelManager(context: Context?, pixelsPerMetre: Int, screenWidth: Int,
+                   var level: String, heroX: Float, heroY: Float) {
     private var mapWidth = 0
     private var mapHeight = 0
+
     @JvmField
     var hero: Hero? = null
     var heroIndex = 0
@@ -28,11 +32,13 @@ class LevelManager(context: Context?, pixelsPerMetre: Int,
     var isPlaying = true
         private set
     private var levelData: LevelData? = null
+
     @JvmField
     var gameObjects: ArrayList<GameObject>
     var backgrounds: ArrayList<Background>? = null
+
     @JvmField
-    var enemisList: ArrayList<Int>
+    var enemiesList: ArrayList<Int>
     private val bitmapsArray: Array<Bitmap?>
     private val badBitmapArray: Array<Bitmap?>
     private fun getLevelName(levelName: String) {
@@ -60,15 +66,18 @@ class LevelManager(context: Context?, pixelsPerMetre: Int,
                             heroX: Float, heroY: Float) {
         var c: Char
         var entranceIndex = -1
-        mapHeight = levelData!!.tiles.size
-        mapWidth = levelData!!.tiles[0].length
-        for (i in levelData!!.tiles.indices) {
-            for (j in levelData!!.tiles[i].indices) {
-                c = levelData!!.tiles[i][j]
+        levelData?.also {
+            mapHeight = it.tiles!!.size
+            mapWidth = it.tiles!![0].length
+        }
+        for (i in levelData?.tiles!!.indices) {
+            for (j in levelData?.tiles!![i].indices) {
+                c = levelData?.tiles!![i][j]
                 if (c != ' ') {
                     currentIndex++
                     when (c) {
                         CharConstants.GRASS -> gameObjects.add(Grass(j.toFloat(), i.toFloat(), c))
+                        CharConstants.FRESCO -> gameObjects.add(Fresco(j.toFloat(), i.toFloat(), c))
                         CharConstants.PLAYER -> {
                             gameObjects.add(Hero(context, heroX, heroY, pixelsPerMetre))
                             heroIndex = currentIndex
@@ -76,16 +85,16 @@ class LevelManager(context: Context?, pixelsPerMetre: Int,
                         }
                         CharConstants.ENEMY -> {
                             gameObjects.add(Enemy(j.toFloat(), i.toFloat(), c, pixelsPerMetre))
-                            enemisList.add(currentIndex)
+                            enemiesList.add(currentIndex)
                         }
                         CharConstants.ENEMY_TANKU -> {
                             gameObjects.add(TankuNeko(j.toFloat(), i.toFloat(), c, pixelsPerMetre))
-                            enemisList.add(currentIndex)
+                            enemiesList.add(currentIndex)
                         }
                         CharConstants.WALL -> gameObjects.add(Wall(j.toFloat(), i.toFloat(), c))
                         CharConstants.HOME -> {
                             entranceIndex++
-                            gameObjects.add(Home(j.toFloat(), i.toFloat(), c, levelData!!.locations[entranceIndex]))
+                            gameObjects.add(Home(j.toFloat(), i.toFloat(), c, levelData!!.locations!![entranceIndex]))
                         }
                         CharConstants.FLORE -> gameObjects.add(Flore(j.toFloat(), i.toFloat(), c))
                         CharConstants.MOUNTAIN -> gameObjects.add(Mountain(j.toFloat(), i.toFloat(), c))
@@ -125,12 +134,13 @@ class LevelManager(context: Context?, pixelsPerMetre: Int,
         isPlaying = !isPlaying
     }
 
-    /*private void loadBackgrounds(Context context, int pixelsPerMetre, int screenWidth) {
-        backgrounds = new ArrayList<>();
-        for (BackgroundData bgData : levelData.backgroundDataList) {
-            backgrounds.add(new Background(context, pixelsPerMetre, screenWidth, bgData));
+    private fun loadBackgrounds(context: Context, pixelsPerMetre: Int, screenWidth: Int) {
+        backgrounds = arrayListOf()
+        for (bgData in levelData?.backgroundDataList!!) {
+            backgrounds?.add(Background(context, pixelsPerMetre, screenWidth, bgData));
         }
-    }*/
+    }
+
     private fun getPosition(type: Char): Int {
         return when (type) {
             CharConstants.GRASS -> 1
@@ -147,6 +157,7 @@ class LevelManager(context: Context?, pixelsPerMetre: Int,
             CharConstants.ENEMY_SPELL -> 13
             CharConstants.ENEMY_SHIELD -> 14
             CharConstants.ENEMY_TANKU -> 15
+            CharConstants.FRESCO -> 16
             else -> 0
         }
     }
@@ -154,11 +165,14 @@ class LevelManager(context: Context?, pixelsPerMetre: Int,
     companion object {
         @JvmField
         var pixelsPerMetre = 0
+
         @JvmField
         var spellObject: SpellObject? = null
         var enemyShieldObject: EnemyShieldObject? = null
+
         @JvmField
         var shieldObject: ShieldObject? = null
+
         @JvmField
         var enemySpellObject: EnemySpellObject? = null
     }
@@ -167,10 +181,50 @@ class LevelManager(context: Context?, pixelsPerMetre: Int,
         Companion.pixelsPerMetre = pixelsPerMetre
         getLevelName(level)
         gameObjects = ArrayList()
-        enemisList = ArrayList()
+        enemiesList = ArrayList()
         bitmapsArray = arrayOfNulls(20)
         badBitmapArray = arrayOfNulls(20)
-        loadMapData(context, pixelsPerMetre, hiroX, hiroY)
-        //loadBackgrounds(context, pixelsPerMetre, screenWidth);
+        loadMapData(context, pixelsPerMetre, heroX, heroY)
+        loadBackgrounds(context!!, pixelsPerMetre, screenWidth)
+        setWayPoints()
+    }
+
+    private fun setWayPoints() {
+        for (enemy in gameObjects) {
+            if (enemy.type == 'a' || enemy.type == 'e') {
+                var startTileIndex = -1
+                var waypointX1 = -1f
+                var waypointX2 = -1f
+                for (tile in gameObjects) {
+                    startTileIndex++
+                    if (tile.worldLocation!!.x == enemy.worldLocation!!.x) {
+                        for (i in 0..4) { // left for loop
+                            if (!gameObjects[startTileIndex - i].isActive) {
+                                //set the left waypoint
+                                waypointX1 = gameObjects[startTileIndex - (i + 1)].worldLocation!!.x
+                                Log.d("set x1 = ", "" + waypointX1)
+                                break // Leave left for loop
+                            } else {
+                                //set to max 5 tiles as no non traversible tile found
+                                waypointX1 = gameObjects[startTileIndex - 3].worldLocation!!.x
+                            }
+                        } // end get left waypoint
+                        for (i in 0..4) { // right for loop
+                            if (!gameObjects[startTileIndex + i].isActive) {
+                                //set the right waypoint
+                                waypointX2 = gameObjects[startTileIndex + (i - 1)].worldLocation!!.x
+                                //Log.d("set x2 = ", "" + waypointX2);
+                                break // Leave right for loop
+                            } else {
+                                //set to max 5 tiles away
+                                waypointX2 = gameObjects[startTileIndex + 3].worldLocation!!.x
+                            }
+                        } // end get right waypoint
+                        (enemy as EnemyObject).setWaypoints(waypointX1, waypointX2)
+                        Log.i("after fors x1 = ", "" + waypointX1);
+                    }
+                }
+            }
+        }
     }
 }

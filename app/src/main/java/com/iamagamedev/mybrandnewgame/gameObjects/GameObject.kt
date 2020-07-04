@@ -16,10 +16,13 @@ import java.util.*
 abstract class GameObject {
     @JvmField
     val LEFT = -1
+
     @JvmField
     val RIGHT = 1
+
     @JvmField
     val UP = -2
+
     @JvmField
     val DOWN = 2
     var worldLocation: LocationXYZ? = null
@@ -50,6 +53,7 @@ abstract class GameObject {
     var isTalking = false
     var dialogs: ArrayList<String>? = null
     var isCanTalk = false
+    var maxVelocity: Float = 0.toFloat()
     abstract fun update(fps: Long)
     fun prepareBitmap(context: Context,
                       bitmapName: String?, pixelsPerMetre: Int): Bitmap {
@@ -101,7 +105,7 @@ abstract class GameObject {
 
     fun setAnimated(pixelsPerMetre: Int, animated: Boolean) {
         isAnimated = animated
-        animation = Animation(bitmapName,
+        animation = Animation(bitmapName!!,
                 height, width, animFps, animFrameCount, pixelsPerMetre)
     }
 
@@ -112,6 +116,7 @@ abstract class GameObject {
     fun move(fps: Long) {
         if (xVelocity != 0f) {
             worldLocation!!.x += xVelocity / fps
+            Log.i("TAGGER", fps.toString())
         }
         if (yVelocity != 0f) {
             worldLocation!!.y += yVelocity / fps

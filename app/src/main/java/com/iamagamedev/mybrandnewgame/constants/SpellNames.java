@@ -1,4 +1,4 @@
-package com.iamagamedev.mybrandnewgame.Constants;
+package com.iamagamedev.mybrandnewgame.constants;
 
 public class SpellNames {
 

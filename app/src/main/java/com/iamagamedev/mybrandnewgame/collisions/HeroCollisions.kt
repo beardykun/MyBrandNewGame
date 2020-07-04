@@ -1,6 +1,6 @@
 package com.iamagamedev.mybrandnewgame.collisions
 
-import com.iamagamedev.mybrandnewgame.Constants.CharConstants
+import com.iamagamedev.mybrandnewgame.constants.CharConstants
 import com.iamagamedev.mybrandnewgame.GameView
 import com.iamagamedev.mybrandnewgame.LevelManager
 import com.iamagamedev.mybrandnewgame.SoundManager

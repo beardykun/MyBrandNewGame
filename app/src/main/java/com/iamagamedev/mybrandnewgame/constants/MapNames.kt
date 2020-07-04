@@ -1,6 +1,6 @@
-package com.iamagamedev.mybrandnewgame.Constants
+package com.iamagamedev.mybrandnewgame.constants
 
-public class MapNames {
+class MapNames {
 
     companion object {
         const val LEVEL_FIRST = "LevelFirst"

@@ -1,6 +1,6 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.spells
 
-import com.iamagamedev.mybrandnewgame.Constants.SpellNames
+import com.iamagamedev.mybrandnewgame.constants.SpellNames
 
 class SpellUtils {
 

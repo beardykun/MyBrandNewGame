@@ -11,8 +11,8 @@ class MediaPlayerManager {
     fun loadMediaPlayer() {
         mediaPlayer = MediaPlayer()
         try {
-            val assetManager = ThisApp.getInstance().assets
-            val descriptor: AssetFileDescriptor = assetManager.openFd("unbeatable_guild.wav")
+            val assetManager = ThisApp.instance?.assets
+            val descriptor: AssetFileDescriptor = assetManager!!.openFd("unbeatable_guild.wav")
             mediaPlayer?.setDataSource(descriptor.fileDescriptor,
                     descriptor.startOffset, descriptor.length)
             mediaPlayer?.prepare()
@@ -24,6 +24,7 @@ class MediaPlayerManager {
     }
 
     fun startPlayer() {
+        mediaPlayer?.setVolume(0.15.toFloat(), 0.15.toFloat())
         mediaPlayer?.start()
     }
 

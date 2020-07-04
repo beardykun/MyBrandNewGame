@@ -1,59 +1,15 @@
 package com.iamagamedev.mybrandnewgame.gameObjects.enemys
 
-import android.graphics.PointF
-import com.iamagamedev.mybrandnewgame.Constants.ObjectNames
-import com.iamagamedev.mybrandnewgame.Constants.SpellNames
 import com.iamagamedev.mybrandnewgame.LevelManager
-import com.iamagamedev.mybrandnewgame.LocationXYZ
 import com.iamagamedev.mybrandnewgame.Utils.fireSpell
+import com.iamagamedev.mybrandnewgame.constants.ObjectNames
+import com.iamagamedev.mybrandnewgame.constants.SpellNames
 import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject
 
 class TankuNeko(worldStartX: Float, worldStartY: Float,
                 type: Char, pixelPerMetre: Int) : EnemyObject() {
-    private var lastWaypointSetTime: Long = 0
-    private val currentWaypoint: PointF
-    private val MAX_X_VELOCITY = 1.8f
-    private val MAX_Y_VELOCITY = 1.8f
-    override fun update(fps: Long) {
-        if (!this.isDead) {
-            when {
-                currentWaypoint.x >= worldLocation!!.x -> {
-                    setxVelocity(MAX_X_VELOCITY)
-                }
-                currentWaypoint.x <= worldLocation!!.x -> {
-                    setxVelocity(-MAX_X_VELOCITY)
-                }
-                else -> {
-                    setxVelocity(0f)
-                }
-            }
-            when {
-                currentWaypoint.y >= worldLocation!!.y -> {
-                    setyVelocity(MAX_Y_VELOCITY)
-                }
-                currentWaypoint.y <= worldLocation!!.y -> {
-                    setyVelocity(-MAX_Y_VELOCITY)
-                }
-                else -> {
-                    setyVelocity(0f)
-                }
-            }
-        } else {
-            setyVelocity(-2f)
-        }
-        move(fps)
-        setRectHitBox()
-        //fireSpell()
-    }
-
-    fun setWaypoint(heroLocation: LocationXYZ) {
-        if (System.currentTimeMillis() > lastWaypointSetTime + 2000) {
-            lastWaypointSetTime = System.currentTimeMillis()
-            currentWaypoint.x = heroLocation.x + 5
-            currentWaypoint.y = heroLocation.y
-        }
-    }
+    val MAX_VELOCITY = 1.8f
 
     private fun fireSpell() {
         fireSpell(LevelManager.enemySpellObject!!, this, SpellNames.FIREBALL)
@@ -66,12 +22,16 @@ class TankuNeko(worldStartX: Float, worldStartY: Float,
         }
     }
 
+    override fun update(fps: Long) {
+        super.update(fps)
+    }
+
     init {
-        var type = type
         val HEIGHT = 1f
         val WIDTH = 1f
         val HEALTH = 150
         val DAMAGE = 15
+        maxVelocity = MAX_VELOCITY
         width = WIDTH
         height = HEIGHT
         health = HEALTH
@@ -83,9 +43,9 @@ class TankuNeko(worldStartX: Float, worldStartY: Float,
         isMoves = true
         isActive = true
         isVisible = true
+        isAggressive = false
         facing = LEFT
-        currentWaypoint = PointF()
-        bitmapName = "tanku_neko"
+        bitmapName = ObjectNames.ENEMY_TANK
         badBitmapName = ObjectNames.ENEMY_BAD
         setWorldLocation(worldStartX, worldStartY, 1)
         setRectHitBox()

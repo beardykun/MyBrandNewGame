@@ -3,58 +3,23 @@ package com.iamagamedev.mybrandnewgame.gameObjects.enemys
 import android.graphics.PointF
 import android.os.Handler
 import android.os.Looper
-import com.iamagamedev.mybrandnewgame.Constants.ObjectNames
-import com.iamagamedev.mybrandnewgame.Constants.SpellNames
+import com.iamagamedev.mybrandnewgame.constants.ObjectNames
+import com.iamagamedev.mybrandnewgame.constants.SpellNames
 import com.iamagamedev.mybrandnewgame.LevelManager
 import com.iamagamedev.mybrandnewgame.LocationXYZ
 import com.iamagamedev.mybrandnewgame.Utils
 import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject
 import com.iamagamedev.mybrandnewgame.gameObjects.spells.SpellObject
 import java.util.*
+import kotlin.random.Random
 
 /**
  * Created by Михан on 17.05.2017.
  */
 class Enemy(worldStartX: Float, worldStartY: Float,
             type: Char, private val pixelPerMetre: Int) : EnemyObject() {
-    private var lastWayPointSetTime: Long = 0
     private val currentWaypoint: PointF
-    private val MAX_X_VELOCITY = 1.8f
-    private val MAX_Y_VELOCITY = 1.8f
-
-    override fun update(fps: Long) {
-        if (!this.isDead) {
-            when {
-                currentWaypoint.x >= worldLocation!!.x -> {
-                    setxVelocity(MAX_X_VELOCITY)
-                }
-                currentWaypoint.x <= worldLocation!!.x -> {
-                    setxVelocity(-MAX_X_VELOCITY)
-                }
-                else -> {
-                    setxVelocity(0f)
-                }
-            }
-            when {
-                currentWaypoint.y >= worldLocation!!.y -> {
-                    setyVelocity(MAX_Y_VELOCITY)
-                }
-                currentWaypoint.y <= worldLocation!!.y -> {
-                    setyVelocity(-MAX_Y_VELOCITY)
-                }
-                else -> {
-                    setyVelocity(0f)
-                }
-            }
-        } else {
-            setyVelocity(-2f)
-        }
-        move(fps)
-        setRectHitBox()
-        //fireSpell()
-        if (shieldIsActive)
-            updateShieldLocation()
-    }
+    private val MAX_VELOCITY = 1.8f
 
     fun setWayPoint(x: Float, y: Float) {
         if (System.currentTimeMillis() > lastWayPointSetTime + 10000) {
@@ -114,6 +79,7 @@ class Enemy(worldStartX: Float, worldStartY: Float,
         val DAMAGE = 15
         startLocationX = worldStartX.toInt()
         startLocationY = worldStartY.toInt()
+        maxVelocity = MAX_VELOCITY
         width = WIDTH
         height = HEIGHT
         health = HEALTH

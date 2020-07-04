@@ -1,24 +1,22 @@
 package com.iamagamedev.mybrandnewgame
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import com.iamagamedev.mybrandnewgame.Constants.CharConstants
-import com.iamagamedev.mybrandnewgame.Constants.MapNames
 import com.iamagamedev.mybrandnewgame.collisions.EnemyCollisions
 import com.iamagamedev.mybrandnewgame.collisions.HeroCollisions
 import com.iamagamedev.mybrandnewgame.collisions.SpellCollisions
+import com.iamagamedev.mybrandnewgame.constants.MapNames
 import com.iamagamedev.mybrandnewgame.gameObjects.EnemyObject
-import com.iamagamedev.mybrandnewgame.gameObjects.GameObject
-import com.iamagamedev.mybrandnewgame.gameObjects.enemys.Enemy
-import com.iamagamedev.mybrandnewgame.gameObjects.enemys.TankuNeko
 
 /**
  * Created by Михан on 17.05.2017.
  */
-class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceView(context), Runnable {
+@SuppressLint("ViewConstructor")
+class GameView(context: Context, private val screenWidth: Int, screenHeight: Int) : SurfaceView(context), Runnable {
     @Volatile
     var running = false
     private var gameThread: Thread? = null
@@ -34,10 +32,11 @@ class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceV
     private var timeThisFrame: Long = 0
     var fps: Long = 0
     private val debugging = true
-    private fun loadLevel(level: String, hiroX: Float, hiroY: Float) {
+
+    private fun loadLevel(level: String, heroX: Float, heroY: Float) {
         lm = null
-        lm = LevelManager(context, viewport.pixelsPerMetreX,
-                level, hiroX, hiroY)
+        lm = LevelManager(context, viewport.pixelsPerMetreX, screenWidth,
+                level, heroX, heroY)
         ic = InputController(viewport.screenWidth, viewport.screenHeight)
         viewport.setWorldCentre(lm!!.gameObjects[lm!!.heroIndex].worldLocation!!.x,
                 lm!!.gameObjects[lm!!.heroIndex].worldLocation!!.y)
@@ -62,19 +61,24 @@ class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceV
                             go.worldLocation!!.y,
                             go.width, go.height)) {
                 go.isVisible = true
-                if (go.isActive) {
+                if (lm!!.isPlaying) {
+                    if (go.isActive) {
 
-                    if (lm!!.isPlaying) {
                         go.update(fps)
-                        HeroCollisions.checkForCollisions(go, lm!!, soundManager)
-                        EnemyCollisions.checkForEnemyCollisions(go, lm!!)
+                        if (go is EnemyObject && go.isAggressive) {
+                            go.setWayPoint(lm?.hero?.worldLocation!!)
+                        }
+
+                        lm?.also {
+                            HeroCollisions.checkForCollisions(go, it, soundManager)
+                            EnemyCollisions.checkForEnemyCollisions(go, it)
+                        }
                         SpellCollisions.checkForSpellCollisions(go)
-                        setEnemyWayPoint(go)
-                    }
-                } else {
+                    } else {
                         if (go is EnemyObject && go.isDead) {
                             go.update(fps)
                         }
+                    }
                 }
             } else {
                 go.isVisible = false
@@ -86,35 +90,15 @@ class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceV
         }
     }
 
-    private fun setEnemyWayPoint(go: GameObject) {
-        if (go.type == CharConstants.ENEMY) {
-            val enemy = go as Enemy
-            /*    Random random = new Random();
-            int wayPointX = enemy.getStartLocationX() + (random.nextInt(6) - 3);
-            int wayPointY = enemy.getStartLocationY() + (random.nextInt(6) - 3);
-            for (GameObject gameObject : lm.gameObjects) {
-                if ((int) gameObject.getWorldLocation().x == wayPointX || (int) gameObject.getWorldLocation().y == wayPointY) {
-                    return;
-                }
-            }*/enemy.setWayPointHero(lm?.hero?.worldLocation!!)
-            //enemy.setWayPoint(wayPointX, wayPointY);
-            enemy.isUnderAttack(LevelManager.spellObject!!)
-        } else if (go.type == CharConstants.ENEMY_TANKU) {
-            val enemy = go as TankuNeko
-            enemy.setWaypoint(lm?.hero?.worldLocation!!)
-            enemy.isUnderAttack(LevelManager.spellObject!!)
-        }
-    }
-
     private fun draw() {
         if (ourHolder.surface.isValid) {
             canvas = ourHolder.lockCanvas()
-            canvas?.drawColor(Color.GREEN)
+            canvas?.drawColor(Color.GRAY)
             if (lm!!.level == MapNames.LEVEL_HOME) {
                 canvas?.drawColor(Color.CYAN)
             }
 
-            //drawBackground(0, -3);
+            //drawBackground(3, -3);
             val toScreen2D = Rect()
             for (layer in -1..1) {
                 for (go in lm!!.gameObjects) {
@@ -123,12 +107,16 @@ class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceV
                                 go.worldLocation!!.y, go.width, go.height))
                         if (go.isAnimated) {
                             val flipper = Matrix()
-                            if (go.facing == lm?.hero?.RIGHT) {
-                                flipper.preScale(-1f, 1f)
-                            } else if (go.facing == lm?.hero?.DOWN) {
-                                flipper.preRotate(-90f)
-                            } else if (go.facing == lm?.hero?.UP) {
-                                flipper.preRotate(90f)
+                            when (go.facing) {
+                                lm?.hero?.RIGHT -> {
+                                    flipper.preScale(-1f, 1f)
+                                }
+                                lm?.hero?.DOWN -> {
+                                    flipper.preRotate(-90f)
+                                }
+                                lm?.hero?.UP -> {
+                                    flipper.preRotate(90f)
+                                }
                             }
                             val r = go.getRectToDraw(System.currentTimeMillis())
                             if (go.isActive) {
@@ -155,9 +143,8 @@ class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceV
                     }
                 }
             }
-            //drawBackground(4, 0);
             debuggingInfo(debugging, canvas)
-            if (!lm!!.hero!!.isTalking && lm?.isPlaying!! && lm?.level != MapNames.LEVEL_BATTLE) {
+            if (!lm!!.hero!!.isTalking && lm?.isPlaying!!) {
                 paint.color = Color.BLACK
                 val moveDirectionLeft = ic!!.moveDirectionLeft
                 canvas?.drawRect(moveDirectionLeft, paint)
@@ -180,7 +167,7 @@ class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceV
         var fromRect2 = Rect()
         var toRect2 = Rect()
         for (bg in lm?.backgrounds!!) {
-            if (bg.z < start && bg.z > stop) {
+            if (bg.z in (stop + 1) until start) {
                 // Is this layer in the viewport?
                 // Clip anything off-screen
                 if (!viewport.clipObjects(-1f, bg.y, 1000f, bg.height.toFloat())) {
@@ -279,9 +266,9 @@ class GameView(context: Context, screenWidth: Int, screenHeight: Int) : SurfaceV
         soundManager.loadSound()
         viewport = Viewport(screenWidth, screenHeight)
 
-        //loadLevel("WorldMap", 3, 5);
+        //loadLevel(MapNames.WORLD_MAP, 3f, 5f)
         loadLevel(MapNames.LEVEL_FIRST, 1f, 1f)
-        //loadLevel("LevelHome", 2, 8);
-        //loadLevel("LevelBattle", 2, 2);
+        //loadLevel(MapNames.LEVEL_HOME, 2f, 8f)
+        //loadLevel(MapNames.LEVEL_BATTLE, 2f, 2f)
     }
 }
